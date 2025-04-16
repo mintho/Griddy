@@ -1,0 +1,556 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXContainerItemProxy section */
+		F49BCCFE2DB05CE500965F40 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F49BCCE72DB05CE400965F40 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F49BCCEE2DB05CE400965F40;
+			remoteInfo = "Grid Image Editor";
+		};
+		F49BCD082DB05CE500965F40 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = F49BCCE72DB05CE400965F40 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = F49BCCEE2DB05CE400965F40;
+			remoteInfo = "Grid Image Editor";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		F49BCCEF2DB05CE400965F40 /* Grid Image Editor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Grid Image Editor.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F49BCCFD2DB05CE500965F40 /* Grid Image EditorTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Grid Image EditorTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F49BCD072DB05CE500965F40 /* Grid Image EditorUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Grid Image EditorUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		F49BCCF12DB05CE400965F40 /* Grid Image Editor */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "Grid Image Editor";
+			sourceTree = "<group>";
+		};
+		F49BCD002DB05CE500965F40 /* Grid Image EditorTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "Grid Image EditorTests";
+			sourceTree = "<group>";
+		};
+		F49BCD0A2DB05CE500965F40 /* Grid Image EditorUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = "Grid Image EditorUITests";
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		F49BCCEC2DB05CE400965F40 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F49BCCFA2DB05CE500965F40 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F49BCD042DB05CE500965F40 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		F49BCCE62DB05CE400965F40 = {
+			isa = PBXGroup;
+			children = (
+				F49BCCF12DB05CE400965F40 /* Grid Image Editor */,
+				F49BCD002DB05CE500965F40 /* Grid Image EditorTests */,
+				F49BCD0A2DB05CE500965F40 /* Grid Image EditorUITests */,
+				F49BCCF02DB05CE400965F40 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		F49BCCF02DB05CE400965F40 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				F49BCCEF2DB05CE400965F40 /* Grid Image Editor.app */,
+				F49BCCFD2DB05CE500965F40 /* Grid Image EditorTests.xctest */,
+				F49BCD072DB05CE500965F40 /* Grid Image EditorUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		F49BCCEE2DB05CE400965F40 /* Grid Image Editor */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F49BCD112DB05CE500965F40 /* Build configuration list for PBXNativeTarget "Grid Image Editor" */;
+			buildPhases = (
+				F49BCCEB2DB05CE400965F40 /* Sources */,
+				F49BCCEC2DB05CE400965F40 /* Frameworks */,
+				F49BCCED2DB05CE400965F40 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				F49BCCF12DB05CE400965F40 /* Grid Image Editor */,
+			);
+			name = "Grid Image Editor";
+			packageProductDependencies = (
+			);
+			productName = "Grid Image Editor";
+			productReference = F49BCCEF2DB05CE400965F40 /* Grid Image Editor.app */;
+			productType = "com.apple.product-type.application";
+		};
+		F49BCCFC2DB05CE500965F40 /* Grid Image EditorTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F49BCD142DB05CE500965F40 /* Build configuration list for PBXNativeTarget "Grid Image EditorTests" */;
+			buildPhases = (
+				F49BCCF92DB05CE500965F40 /* Sources */,
+				F49BCCFA2DB05CE500965F40 /* Frameworks */,
+				F49BCCFB2DB05CE500965F40 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F49BCCFF2DB05CE500965F40 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				F49BCD002DB05CE500965F40 /* Grid Image EditorTests */,
+			);
+			name = "Grid Image EditorTests";
+			packageProductDependencies = (
+			);
+			productName = "Grid Image EditorTests";
+			productReference = F49BCCFD2DB05CE500965F40 /* Grid Image EditorTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		F49BCD062DB05CE500965F40 /* Grid Image EditorUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = F49BCD172DB05CE500965F40 /* Build configuration list for PBXNativeTarget "Grid Image EditorUITests" */;
+			buildPhases = (
+				F49BCD032DB05CE500965F40 /* Sources */,
+				F49BCD042DB05CE500965F40 /* Frameworks */,
+				F49BCD052DB05CE500965F40 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				F49BCD092DB05CE500965F40 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				F49BCD0A2DB05CE500965F40 /* Grid Image EditorUITests */,
+			);
+			name = "Grid Image EditorUITests";
+			packageProductDependencies = (
+			);
+			productName = "Grid Image EditorUITests";
+			productReference = F49BCD072DB05CE500965F40 /* Grid Image EditorUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		F49BCCE72DB05CE400965F40 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1630;
+				LastUpgradeCheck = 1630;
+				TargetAttributes = {
+					F49BCCEE2DB05CE400965F40 = {
+						CreatedOnToolsVersion = 16.3;
+					};
+					F49BCCFC2DB05CE500965F40 = {
+						CreatedOnToolsVersion = 16.3;
+						TestTargetID = F49BCCEE2DB05CE400965F40;
+					};
+					F49BCD062DB05CE500965F40 = {
+						CreatedOnToolsVersion = 16.3;
+						TestTargetID = F49BCCEE2DB05CE400965F40;
+					};
+				};
+			};
+			buildConfigurationList = F49BCCEA2DB05CE400965F40 /* Build configuration list for PBXProject "Grid Image Editor" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = F49BCCE62DB05CE400965F40;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = F49BCCF02DB05CE400965F40 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				F49BCCEE2DB05CE400965F40 /* Grid Image Editor */,
+				F49BCCFC2DB05CE500965F40 /* Grid Image EditorTests */,
+				F49BCD062DB05CE500965F40 /* Grid Image EditorUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		F49BCCED2DB05CE400965F40 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F49BCCFB2DB05CE500965F40 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F49BCD052DB05CE500965F40 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		F49BCCEB2DB05CE400965F40 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F49BCCF92DB05CE500965F40 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F49BCD032DB05CE500965F40 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		F49BCCFF2DB05CE500965F40 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F49BCCEE2DB05CE400965F40 /* Grid Image Editor */;
+			targetProxy = F49BCCFE2DB05CE500965F40 /* PBXContainerItemProxy */;
+		};
+		F49BCD092DB05CE500965F40 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = F49BCCEE2DB05CE400965F40 /* Grid Image Editor */;
+			targetProxy = F49BCD082DB05CE500965F40 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		F49BCD0F2DB05CE500965F40 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = J5S2US7X3W;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.3;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		F49BCD102DB05CE500965F40 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = J5S2US7X3W;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.3;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		F49BCD122DB05CE500965F40 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Grid Image Editor/Grid_Image_Editor.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = J5S2US7X3W;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "Miskatonic-University-Press.Grid-Image-Editor";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		F49BCD132DB05CE500965F40 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = "Grid Image Editor/Grid_Image_Editor.entitlements";
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = J5S2US7X3W;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "Miskatonic-University-Press.Grid-Image-Editor";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		F49BCD152DB05CE500965F40 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = J5S2US7X3W;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.3;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "Miskatonic-University-Press.Grid-Image-EditorTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Grid Image Editor.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Grid Image Editor";
+			};
+			name = Debug;
+		};
+		F49BCD162DB05CE500965F40 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = J5S2US7X3W;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 15.3;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "Miskatonic-University-Press.Grid-Image-EditorTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Grid Image Editor.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Grid Image Editor";
+			};
+			name = Release;
+		};
+		F49BCD182DB05CE500965F40 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = J5S2US7X3W;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "Miskatonic-University-Press.Grid-Image-EditorUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = "Grid Image Editor";
+			};
+			name = Debug;
+		};
+		F49BCD192DB05CE500965F40 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = J5S2US7X3W;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "Miskatonic-University-Press.Grid-Image-EditorUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = "Grid Image Editor";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		F49BCCEA2DB05CE400965F40 /* Build configuration list for PBXProject "Grid Image Editor" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F49BCD0F2DB05CE500965F40 /* Debug */,
+				F49BCD102DB05CE500965F40 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F49BCD112DB05CE500965F40 /* Build configuration list for PBXNativeTarget "Grid Image Editor" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F49BCD122DB05CE500965F40 /* Debug */,
+				F49BCD132DB05CE500965F40 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F49BCD142DB05CE500965F40 /* Build configuration list for PBXNativeTarget "Grid Image EditorTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F49BCD152DB05CE500965F40 /* Debug */,
+				F49BCD162DB05CE500965F40 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		F49BCD172DB05CE500965F40 /* Build configuration list for PBXNativeTarget "Grid Image EditorUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				F49BCD182DB05CE500965F40 /* Debug */,
+				F49BCD192DB05CE500965F40 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = F49BCCE72DB05CE400965F40 /* Project object */;
+}
