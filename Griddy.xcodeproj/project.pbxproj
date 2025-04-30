@@ -59,8 +59,8 @@
 		F4472EEB2DB9CB290056F8AB /* todo.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = todo.txt; sourceTree = "<group>"; };
 		F4472F0C2DC02BD30056F8AB /* CustomScrollIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomScrollIndicator.swift; sourceTree = "<group>"; };
 		F49BCCEF2DB05CE400965F40 /* Griddy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Griddy.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		F49BCCFD2DB05CE500965F40 /* GriddyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GriddyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		F49BCD072DB05CE500965F40 /* GriddyUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GriddyUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F49BCCFD2DB05CE500965F40 /* GriddyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = GriddyTests.xctest; path = "/Users/minzenmay/Coding/Grid Image Editor/Grid Image Editor/build/Debug/Griddy.app/Contents/PlugIns/GriddyTests.xctest"; sourceTree = "<absolute>"; };
+		F49BCD072DB05CE500965F40 /* GriddyUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = GriddyUITests.xctest; path = "/Users/minzenmay/Coding/Grid Image Editor/Grid Image Editor/build/Debug/GriddyUITests-Runner.app/Contents/PlugIns/GriddyUITests.xctest"; sourceTree = "<absolute>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -124,8 +124,6 @@
 			isa = PBXGroup;
 			children = (
 				F49BCCEF2DB05CE400965F40 /* Griddy.app */,
-				F49BCCFD2DB05CE500965F40 /* GriddyTests.xctest */,
-				F49BCD072DB05CE500965F40 /* GriddyUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -442,7 +440,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
-				CODE_SIGN_ENTITLEMENTS = Griddy/Griddy.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Griddy.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -475,7 +473,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
-				CODE_SIGN_ENTITLEMENTS = Griddy/Griddy.entitlements;
+				CODE_SIGN_ENTITLEMENTS = Griddy.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
