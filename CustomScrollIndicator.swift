@@ -35,8 +35,13 @@ struct CustomScrollIndicator: View {
     @State private var dragStartOffset: CGFloat? = nil
     
     // MARK: - Computed Properties (Axis-Aware)
-    private var contentLength: CGFloat { axis == .vertical ? contentSize.height : contentSize.width }
-    private var visibleLength: CGFloat { axis == .vertical ? visibleSize.height : visibleSize.width }
+    private var contentLength: CGFloat {
+        let extraSpace: CGFloat = 100
+        return axis == .vertical ? contentSize.height + 2 * extraSpace : contentSize.width + 2 * extraSpace
+    }
+    private var visibleLength: CGFloat {
+        axis == .vertical ? visibleSize.height : visibleSize.width
+    }
     private var maxScrollOffset: CGFloat { max(0, contentLength - visibleLength) }
     private var trackLength: CGFloat { visibleLength }
     

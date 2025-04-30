@@ -28,37 +28,30 @@ struct ScrollViewContentSizeKey: PreferenceKey {
 
 // MARK: - FileView Struct
 struct FileView: View {
-    @ObservedObject var fileState: FileState
-    @Environment(\.undoManager) var envUndoManager
-    
-    @State private var contentSize: CGSize = .zero
-    @State private var scrollOffset: CGPoint = .zero
-    @State private var selectedColorIndex: Int = 1
-    @State private var zoomLevel: CGFloat = 1.0
-    @GestureState private var gestureMagnification: CGFloat = 1.0
-    @State private var committedZoomLevel: CGFloat = 1.0
-    
-    private let minZoom: CGFloat = 0.2
-    private let maxZoom: CGFloat = 10.0
-    private let zoomSensitivity: CGFloat = 0.9
-    private let toolbarWidth: CGFloat = 180
-    private let circleSize: CGFloat = 35
-    private let scrollBarInteractiveThickness: CGFloat = 11.0
+    @ObservedObject var fileState: FileState           // The file state object that holds zoom and scroll data
+    @Environment(\.undoManager) var envUndoManager     // Undo manager from the environment
+
+    @State private var contentSize: CGSize = .zero     // Tracks the size of the scrollable content
+    @GestureState private var gestureMagnification: CGFloat = 1.0  // Temporary state for zoom gesture
+    @State private var selectedColorIndex: Int = 1     // Currently selected color for painting
+
+    private let minZoom: CGFloat = 0.2                 // Minimum zoom level
+    private let maxZoom: CGFloat = 5.0                // Maximum zoom level
+    private let zoomSensitivity: CGFloat = 0.4         // Sensitivity for zoom adjustments
+    private let toolbarWidth: CGFloat = 180            // Width of the toolbar
+    private let circleSize: CGFloat = 35               // Size of color selection circles
+    private let scrollBarInteractiveThickness: CGFloat = 11.0  // Thickness of scroll bar hit area
     
     var magnificationGesture: some Gesture {
         MagnificationGesture()
-            .updating($gestureMagnification) { currentState, gestureState, transaction in
-                let desiredZoom = committedZoomLevel * currentState
-                let sensitiveZoom = committedZoomLevel + (desiredZoom - committedZoomLevel) * zoomSensitivity
-                self.zoomLevel = max(self.minZoom, min(sensitiveZoom, self.maxZoom))
-                gestureState = currentState
+            .onChanged { value in
+                let sensitivity: CGFloat = 0.1
+                let delta = value - 1.0
+                let scaledDelta = delta * sensitivity
+                let newZoomLevel = fileState.zoomLevel * (1.0 + scaledDelta)
+                fileState.zoomLevel = max(minZoom, min(maxZoom, newZoomLevel))
             }
-            .onEnded { value in
-                let finalDesiredZoom = committedZoomLevel * value
-                let finalSensitiveZoom = committedZoomLevel + (finalDesiredZoom - committedZoomLevel) * zoomSensitivity
-                let finalClampedZoom = max(self.minZoom, min(finalSensitiveZoom, self.maxZoom))
-                withAnimation(.interactiveSpring()) { self.zoomLevel = finalClampedZoom }
-                self.committedZoomLevel = finalClampedZoom
+            .onEnded { _ in
             }
     }
     
@@ -69,69 +62,82 @@ struct FileView: View {
                 let globalFrameForOverlay = outerGeometry.frame(in: .global)
                 
                 ScrollViewReader { proxy in
-                    ScrollView([.horizontal, .vertical], showsIndicators: false) {
+                    let scrollViewContent = ScrollView([.horizontal, .vertical], showsIndicators: false) {
                         scrollableContentView(
                             visibleSize: visibleSize,
                             proxy: proxy,
                             globalFrame: globalFrameForOverlay
                         )
                     }
-                    .coordinateSpace(name: "scrollContainerSpace")
-                    .onScrollGeometryChange(for: CGPoint.self, of: { $0.contentOffset }) { oldValue, newValue in
-                        let newOffset = newValue
-                        let tolerance: CGFloat = 0.1
-                        if abs(scrollOffset.x - newOffset.x) > tolerance || abs(scrollOffset.y - newOffset.y) > tolerance {
-                            self.scrollOffset = newOffset
-                        }
-                    }
-                    .onScrollGeometryChange(for: CGSize.self, of: { $0.contentSize }) { oldValue, newValue in
-                        let newSize = newValue
-                        if newSize.width > 0 && newSize.height > 0 && self.contentSize != newSize {
-                            self.contentSize = newSize
-                        }
-                    }
-                    .overlay(
-                        Group {
-                            if contentSize.height > visibleSize.height {
-                                HStack {
-                                    Spacer()
-                                    CustomScrollIndicator(
-                                        axis: .vertical,
-                                        scrollProxy: proxy,
-                                        scrollableContentID: "scrollableContent",
-                                        currentOffset: $scrollOffset.y,
-                                        otherAxisOffset: scrollOffset.x,
-                                        contentSize: contentSize,
-                                        visibleSize: visibleSize
-                                    )
-                                    .frame(width: scrollBarInteractiveThickness)
-                                }
-                                .padding(.bottom, scrollBarInteractiveThickness)
-                                .frame(maxHeight: .infinity, alignment: .trailing)
+                    scrollViewContent
+                        .coordinateSpace(name: "scrollContainerSpace")
+                        .onScrollGeometryChange(for: CGPoint.self, of: { $0.contentOffset }) { oldValue, newValue in
+                            let newOffset = newValue
+                            let tolerance: CGFloat = 0.1
+                            if abs(fileState.scrollOffset.x - newOffset.x) > tolerance || abs(fileState.scrollOffset.y - newOffset.y) > tolerance {
+                                fileState.scrollOffset = newOffset
                             }
                         }
-                    )
-                    .overlay(
-                        Group {
-                            if contentSize.width > visibleSize.width {
-                                VStack {
-                                    Spacer()
-                                    CustomScrollIndicator(
-                                        axis: .horizontal,
-                                        scrollProxy: proxy,
-                                        scrollableContentID: "scrollableContent",
-                                        currentOffset: $scrollOffset.x,
-                                        otherAxisOffset: scrollOffset.y,
-                                        contentSize: contentSize,
-                                        visibleSize: visibleSize
-                                    )
-                                    .frame(height: scrollBarInteractiveThickness)
-                                }
-                                .padding(.trailing, scrollBarInteractiveThickness)
-                                .frame(maxWidth: .infinity, alignment: .bottom)
+                        .onScrollGeometryChange(for: CGSize.self, of: { $0.contentSize }) { oldValue, newValue in
+                            let newSize = newValue
+                            if newSize.width > 0 && newSize.height > 0 && self.contentSize != newSize {
+                                self.contentSize = newSize
                             }
                         }
-                    )
+                        .overlay(
+                            Group {
+                                if contentSize.height > visibleSize.height {
+                                    HStack {
+                                        Spacer()
+                                        CustomScrollIndicator(
+                                            axis: .vertical,
+                                            scrollProxy: proxy,
+                                            scrollableContentID: "scrollableContent",
+                                            currentOffset: $fileState.scrollOffset.y,
+                                            otherAxisOffset: fileState.scrollOffset.x,
+                                            contentSize: contentSize,
+                                            visibleSize: visibleSize
+                                        )
+                                        .frame(width: scrollBarInteractiveThickness)
+                                    }
+                                    .padding(.bottom, scrollBarInteractiveThickness)
+                                    .frame(maxHeight: .infinity, alignment: .trailing)
+                                }
+                            }
+                        )
+                        .overlay(
+                            Group {
+                                if contentSize.width > visibleSize.width {
+                                    VStack {
+                                        Spacer()
+                                        CustomScrollIndicator(
+                                            axis: .horizontal,
+                                            scrollProxy: proxy,
+                                            scrollableContentID: "scrollableContent",
+                                            currentOffset: $fileState.scrollOffset.x,
+                                            otherAxisOffset: fileState.scrollOffset.y,
+                                            contentSize: contentSize,
+                                            visibleSize: visibleSize
+                                        )
+                                        .frame(height: scrollBarInteractiveThickness)
+                                    }
+                                    .padding(.trailing, scrollBarInteractiveThickness)
+                                    .frame(maxWidth: .infinity, alignment: .bottom)
+                                }
+                            }
+                        )
+                        .onAppear {
+                            if fileState.isNewlyOpened {
+                                let margin: CGFloat = 100
+                                let initialOffsetX = margin
+                                let initialOffsetY = margin
+                                fileState.scrollOffset = CGPoint(x: initialOffsetX, y: initialOffsetY)
+                                fileState.isNewlyOpened = false
+                            } else {
+                                let targetAnchor = calculateAnchor(from: fileState.scrollOffset, visibleSize: visibleSize)
+                                proxy.scrollTo("scrollableContent", anchor: targetAnchor)
+                            }
+                        }
                 }
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
@@ -141,84 +147,73 @@ struct FileView: View {
                 .padding()
                 .frame(width: toolbarWidth)
         }
-        .onAppear {
-            self.zoomLevel = 1.0
-            self.committedZoomLevel = 1.0
-        }
-        .onChange(of: fileState.id) {
-            self.zoomLevel = 1.0
-            self.committedZoomLevel = 1.0
-        }
+        .gesture(magnificationGesture)
     }
     
     @ViewBuilder
     private func scrollableContentView(visibleSize: CGSize, proxy: ScrollViewProxy, globalFrame: CGRect) -> some View {
         let scrollableContentID = "scrollableContent"
-        
-        ZStack(alignment: .topLeading) {
-            if let image = fileState.image, fileState.imageWidth > 0, fileState.imageHeight > 0 {
-                let scaledWidth = fileState.imageWidth * zoomLevel
-                let scaledHeight = fileState.imageHeight * zoomLevel
-                
-                ZStack {
-                    Image(nsImage: image)
-                        .resizable()
-                        .interpolation(.none)
-                        .frame(width: scaledWidth, height: scaledHeight)
-                        .gesture(magnificationGesture)
-                    
-                    GridOverlay(
-                        gridData: $fileState.gridData,
-                        gridColumns: fileState.gridColumns,
-                        gridRows: fileState.gridRows,
-                        zoomLevel: zoomLevel,
-                        onPaint: handlePaintAction,
-                        selectedColorIndex: selectedColorIndex,
-                        scrollProxy: proxy,
-                        scrollableContentID: scrollableContentID,
-                        externalContentOffset: $scrollOffset,
-                        visibleSize: visibleSize,
-                        contentSize: contentSize,
-                        scrollViewGlobalFrame: globalFrame
-                    )
+        if let image = fileState.image, fileState.imageWidth > 0, fileState.imageHeight > 0 {
+            let scaledWidth = fileState.imageWidth * fileState.zoomLevel
+            let scaledHeight = fileState.imageHeight * fileState.zoomLevel
+            let margin: CGFloat = 100 // ---- Margin around image
+            
+            ZStack {
+                Image(nsImage: image)
+                    .resizable()
+                    .interpolation(.none)
                     .frame(width: scaledWidth, height: scaledHeight)
-                    .contentShape(Rectangle())
-                }
+                    .position(x: scaledWidth / 2 + margin, y: scaledHeight / 2 + margin)
+                
+                GridOverlay(
+                    gridData: $fileState.gridData,
+                    gridColumns: fileState.gridColumns,
+                    gridRows: fileState.gridRows,
+                    zoomLevel: fileState.zoomLevel,
+                    onPaint: handlePaintAction,
+                    selectedColorIndex: selectedColorIndex,
+                    scrollProxy: proxy,
+                    scrollableContentID: scrollableContentID,
+                    externalContentOffset: $fileState.scrollOffset,
+                    visibleSize: visibleSize,
+                    contentSize: contentSize,
+                    scrollViewGlobalFrame: globalFrame
+                )
                 .frame(width: scaledWidth, height: scaledHeight)
-                .id(scrollableContentID)
-                .background(
-                    GeometryReader { contentGeo in
-                        Color.clear
-                            .preference(
-                                key: ScrollViewOffsetKey.self,
-                                value: contentGeo.frame(in: .named("scrollContainerSpace")).origin
-                            )
-                    }
-                )
-                .background(
-                    GeometryReader { contentGeo in
-                        Color.clear
-                            .preference(
-                                key: ScrollViewContentSizeKey.self,
-                                value: contentGeo.size
-                            )
-                    }
-                )
-            } else {
-                Text("No Valid Image Loaded")
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-                    .foregroundColor(.red)
+                .position(x: scaledWidth / 2 + margin, y: scaledHeight / 2 + margin)
             }
+            .frame(width: scaledWidth + 2 * margin, height: scaledHeight + 2 * margin)
+            .id(scrollableContentID)
+            .contentShape(Rectangle())
+            .simultaneousGesture(magnificationGesture)
+            .background(
+                GeometryReader { contentGeo in
+                    Color.clear
+                        .preference(
+                            key: ScrollViewOffsetKey.self,
+                            value: contentGeo.frame(in: .named("scrollContainerSpace")).origin
+                        )
+                }
+            )
+            .background(
+                GeometryReader { contentGeo in
+                    Color.clear
+                        .preference(
+                            key: ScrollViewContentSizeKey.self,
+                            value: contentGeo.size
+                        )
+                }
+            )
+        } else {
+            Text("No Valid Image Loaded")
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
+                .foregroundColor(.red)
         }
-        .frame(minWidth: visibleSize.width, minHeight: visibleSize.height)
-        .alignmentGuide(.top) { d in d[.top] }
-        .alignmentGuide(.leading) { d in d[.leading] }
     }
     
     // MARK: - Toolbar View Builder
     @ViewBuilder
     private func createToolbar() -> some View {
-        // Use GeometryReader to get the available height for the toolbar content
         GeometryReader { geometry in
             let availableHeight = geometry.size.height
             let zoomControlsHeight: CGFloat = 30
@@ -232,15 +227,19 @@ struct FileView: View {
             
             VStack(alignment: .center, spacing: 10) {
                 HStack {
-                    Button(action: zoomOut) { Image(systemName: "minus.magnifyingglass") }
-                        .disabled(zoomLevel <= minZoom)
+                    Button(action: zoomOut) {
+                        Image(systemName: "minus.magnifyingglass")
+                    }
+                    .disabled(fileState.zoomLevel <= minZoom) // Updated from zoomLevel to fileState.zoomLevel
                     
-                    Text(String(format: "%.1fx", zoomLevel))
+                    Text(String(format: "%.1fx", fileState.zoomLevel)) // Updated from zoomLevel to fileState.zoomLevel
                         .font(.caption)
                         .frame(minWidth: 40)
                     
-                    Button(action: zoomIn) { Image(systemName: "plus.magnifyingglass") }
-                        .disabled(zoomLevel >= maxZoom)
+                    Button(action: zoomIn) {
+                        Image(systemName: "plus.magnifyingglass")
+                    }
+                    .disabled(fileState.zoomLevel >= maxZoom) // Updated from zoomLevel to fileState.zoomLevel
                 }
                 .padding(.bottom, 10)
                 
@@ -323,16 +322,11 @@ struct FileView: View {
     }
     
     private func zoomIn() {
-        applyZoom(min(maxZoom, committedZoomLevel * 1.5))
+        fileState.zoomLevel = min(maxZoom, fileState.zoomLevel * 1.5)
     }
-    
+
     private func zoomOut() {
-        applyZoom(max(minZoom, committedZoomLevel / 1.5))
-    }
-    
-    private func applyZoom(_ newZoom: CGFloat) {
-        withAnimation(.interactiveSpring()) { zoomLevel = newZoom }
-        committedZoomLevel = newZoom
+        fileState.zoomLevel = max(minZoom, fileState.zoomLevel / 1.5)
     }
     
     private func handlePaintAction(cellsToPaint: Set<GridCell>, colorIndex: Int) {
@@ -376,5 +370,14 @@ struct FileView: View {
                 s.gridData[c.row][c.col] = v
             }
         }
+    }
+    
+    private func calculateAnchor(from offset: CGPoint, visibleSize: CGSize) -> UnitPoint {
+        let margin: CGFloat = 100 // ---- Margin in anchor calc
+        let scrollableWidth = contentSize.width - 2 * margin
+        let scrollableHeight = contentSize.height - 2 * margin
+        let anchorX = scrollableWidth > visibleSize.width ? (offset.x - margin) / (scrollableWidth - visibleSize.width) : 0.5
+        let anchorY = scrollableHeight > visibleSize.height ? (offset.y - margin) / (scrollableHeight - visibleSize.height) : 0.5
+        return UnitPoint(x: anchorX.clamped(to: 0...1), y: anchorY.clamped(to: 0...1))
     }
 }

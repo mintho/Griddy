@@ -11,7 +11,7 @@
 
 ## A Simple macOS Tool for Creating Collision and Tile Property Maps
 
-[![macOS](https://img.shields.io/badge/macOS-14.0%2B-blue)](https://www.apple.com/macos)
+[![macOS](https://img.shields.io/badge/macOS-15.0%2B-blue)](https://www.apple.com/macos)
 [![Swift](https://img.shields.io/badge/Swift-5.9%2B-orange.svg)](https://swift.org)
 [![SwiftUI](https://img.shields.io/badge/SwiftUI-Latest-brightgreen.svg)](https://developer.apple.com/xcode/swiftui/)
 [![License](https://img.shields.io/badge/License-MIT-lightgrey.svg)](LICENSE) 

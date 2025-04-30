@@ -53,9 +53,11 @@ struct GridOverlay: View {
     @State private var autoScrollTimer: Timer? = nil
     @State private var autoScrollDirection: Set<Direction> = []
     @State private var localDragLocation: CGPoint = .zero
-    private let autoScrollMargin: CGFloat = 50.0
-    private let autoScrollAmount: CGFloat = 15.0
+    private let autoScrollMargin: CGFloat = 60.0
+    private let autoScrollAmount: CGFloat = 50.0
     private let autoScrollTimerInterval: TimeInterval = 0.02
+    @State private var scrollSpeedX: CGFloat = 0
+    @State private var scrollSpeedY: CGFloat = 0
     
     // MARK: - Additional State for Continuous Updates
     @State private var initialLocalDragLocation: CGPoint? = nil
@@ -110,6 +112,7 @@ struct GridOverlay: View {
                     }
                 }
                 .contentShape(Rectangle())
+                
                 .gesture(
                     DragGesture(minimumDistance: 0, coordinateSpace: .local)
                         .onChanged { value in
@@ -156,6 +159,7 @@ struct GridOverlay: View {
                             resetDragState()
                         }
                 )
+                 
                 .onChange(of: externalContentOffset) { _, newOffset in
                     if isDragging {
                         if let initialLoc = initialLocalDragLocation, let initialOff = initialContentOffset {
@@ -261,35 +265,50 @@ struct GridOverlay: View {
     
     // MARK: - Auto-Scroll Logic
     private func determineScrollDirection() {
-        // Calculate mouse position relative to the scroll view's global frame
-        guard let screen = NSScreen.main else { return }
-        let screenHeight = screen.frame.height
+        guard let window = NSApplication.shared.windows.first else { return }
+        let windowFrame = window.frame
         let mouseLocation = NSEvent.mouseLocation
-        let globalMousePoint = CGPoint(x: mouseLocation.x, y: screenHeight - mouseLocation.y)
+        let mouseInWindowX = mouseLocation.x - windowFrame.minX
+        let mouseInWindowY = windowFrame.height - (mouseLocation.y - windowFrame.minY)
         let scrollViewPoint = CGPoint(
-            x: globalMousePoint.x - scrollViewGlobalFrame.minX,
-            y: globalMousePoint.y - scrollViewGlobalFrame.minY
+            x: mouseInWindowX - scrollViewGlobalFrame.minX,
+            y: mouseInWindowY - scrollViewGlobalFrame.minY
         )
+        
         var directions: Set<Direction> = []
+        let maxScrollSpeed: CGFloat = 1500.0 // Maximum speed in pixels per second
         
-        let visibleX = scrollViewPoint.x
-        let visibleY = scrollViewPoint.y
+        // Reset speeds
+        scrollSpeedX = 0
+        scrollSpeedY = 0
         
-        if visibleX < autoScrollMargin {
+        // Left edge
+        if scrollViewPoint.x < autoScrollMargin {
             directions.insert(.left)
-        } else if visibleX > visibleSize.width - autoScrollMargin {
+            let distanceFromLeft = scrollViewPoint.x
+            scrollSpeedX = -((1.0 - distanceFromLeft / autoScrollMargin) * maxScrollSpeed)
+        }
+        // Right edge
+        else if scrollViewPoint.x > scrollViewGlobalFrame.width - autoScrollMargin {
             directions.insert(.right)
+            let distanceFromRight = scrollViewGlobalFrame.width - scrollViewPoint.x
+            scrollSpeedX = (1.0 - distanceFromRight / autoScrollMargin) * maxScrollSpeed
         }
         
-        if visibleY < autoScrollMargin {
+        // Top edge
+        if scrollViewPoint.y < autoScrollMargin {
             directions.insert(.up)
-        } else if visibleY > visibleSize.height - autoScrollMargin {
+            let distanceFromTop = scrollViewPoint.y
+            scrollSpeedY = -((1.0 - distanceFromTop / autoScrollMargin) * maxScrollSpeed)
+        }
+        // Bottom edge
+        else if scrollViewPoint.y > scrollViewGlobalFrame.height - autoScrollMargin {
             directions.insert(.down)
+            let distanceFromBottom = scrollViewGlobalFrame.height - scrollViewPoint.y
+            scrollSpeedY = (1.0 - distanceFromBottom / autoScrollMargin) * maxScrollSpeed
         }
         
-        if directions != self.autoScrollDirection {
-            self.autoScrollDirection = directions
-        }
+        self.autoScrollDirection = directions
     }
     
     private func manageAutoScrollTimer() {
@@ -317,32 +336,10 @@ struct GridOverlay: View {
     private func performAutoScroll() {
         guard !autoScrollDirection.isEmpty else { return }
         
+        let deltaX = scrollSpeedX * autoScrollTimerInterval
+        let deltaY = scrollSpeedY * autoScrollTimerInterval
+        
         let currentOffset = externalContentOffset
-        var deltaX: CGFloat = 0
-        var deltaY: CGFloat = 0
-        
-        // Calculate scroll intensity based on distance from the center
-        let viewportX = localDragLocation.x - externalContentOffset.x
-        let viewportY = localDragLocation.y - externalContentOffset.y
-        let centerX = visibleSize.width / 2
-        let centerY = visibleSize.height / 2
-        let distanceX = abs(viewportX - centerX)
-        let distanceY = abs(viewportY - centerY)
-        let maxDistanceX = centerX
-        let maxDistanceY = centerY
-        let intensityX = (distanceX / maxDistanceX).clamped(to: 0...1)
-        let intensityY = (distanceY / maxDistanceY).clamped(to: 0...1)
-        let speedFactorX = pow(intensityX, 3)
-        let speedFactorY = pow(intensityY, 3)
-        let baseScrollAmount: CGFloat = 55.0
-        let scrollAmountX = baseScrollAmount * speedFactorX
-        let scrollAmountY = baseScrollAmount * speedFactorY
-        
-        if autoScrollDirection.contains(.left) { deltaX -= scrollAmountX }
-        if autoScrollDirection.contains(.right) { deltaX += scrollAmountX }
-        if autoScrollDirection.contains(.up) { deltaY -= scrollAmountY }
-        if autoScrollDirection.contains(.down) { deltaY += scrollAmountY }
-        
         let targetX = currentOffset.x + deltaX
         let targetY = currentOffset.y + deltaY
         
@@ -352,15 +349,15 @@ struct GridOverlay: View {
         let clampedY = targetY.clamped(to: 0...maxY)
         let targetOffset = CGPoint(x: clampedX, y: clampedY)
         
-        guard targetOffset != currentOffset else { return }
-        
-        let denominatorX = max(1e-6, contentSize.width - visibleSize.width)
-        let denominatorY = max(1e-6, contentSize.height - visibleSize.height)
-        let anchorX = clampedX / denominatorX
-        let anchorY = clampedY / denominatorY
-        let targetAnchor = UnitPoint(x: anchorX.clamped(to: 0...1), y: anchorY.clamped(to: 0...1))
-        
-        scrollProxy.scrollTo(scrollableContentID, anchor: targetAnchor)
+        if targetOffset != currentOffset {
+            let denominatorX = max(1e-6, contentSize.width - visibleSize.width)
+            let denominatorY = max(1e-6, contentSize.height - visibleSize.height)
+            let anchorX = clampedX / denominatorX
+            let anchorY = clampedY / denominatorY
+            let targetAnchor = UnitPoint(x: anchorX.clamped(to: 0...1), y: anchorY.clamped(to: 0...1))
+            
+            scrollProxy.scrollTo(scrollableContentID, anchor: targetAnchor)
+        }
     }
     
     private func resetDragState() {
