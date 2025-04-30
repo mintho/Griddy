@@ -24,25 +24,25 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		F49BCCEF2DB05CE400965F40 /* Grid Image Editor.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Grid Image Editor.app"; sourceTree = BUILT_PRODUCTS_DIR; };
-		F49BCCFD2DB05CE500965F40 /* Grid Image EditorTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Grid Image EditorTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		F49BCD072DB05CE500965F40 /* Grid Image EditorUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Grid Image EditorUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		F49BCCEF2DB05CE400965F40 /* Griddy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Griddy.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F49BCCFD2DB05CE500965F40 /* GriddyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GriddyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F49BCD072DB05CE500965F40 /* GriddyUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GriddyUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		F49BCCF12DB05CE400965F40 /* Grid Image Editor */ = {
+		F49BCCF12DB05CE400965F40 /* Griddy */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "Grid Image Editor";
+			path = Griddy;
 			sourceTree = "<group>";
 		};
-		F49BCD002DB05CE500965F40 /* Grid Image EditorTests */ = {
+		F49BCD002DB05CE500965F40 /* GriddyTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "Grid Image EditorTests";
+			path = GriddyTests;
 			sourceTree = "<group>";
 		};
-		F49BCD0A2DB05CE500965F40 /* Grid Image EditorUITests */ = {
+		F49BCD0A2DB05CE500965F40 /* GriddyUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "Grid Image EditorUITests";
+			path = GriddyUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -75,9 +75,9 @@
 		F49BCCE62DB05CE400965F40 = {
 			isa = PBXGroup;
 			children = (
-				F49BCCF12DB05CE400965F40 /* Grid Image Editor */,
-				F49BCD002DB05CE500965F40 /* Grid Image EditorTests */,
-				F49BCD0A2DB05CE500965F40 /* Grid Image EditorUITests */,
+				F49BCCF12DB05CE400965F40 /* Griddy */,
+				F49BCD002DB05CE500965F40 /* GriddyTests */,
+				F49BCD0A2DB05CE500965F40 /* GriddyUITests */,
 				F49BCCF02DB05CE400965F40 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -85,9 +85,9 @@
 		F49BCCF02DB05CE400965F40 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				F49BCCEF2DB05CE400965F40 /* Grid Image Editor.app */,
-				F49BCCFD2DB05CE500965F40 /* Grid Image EditorTests.xctest */,
-				F49BCD072DB05CE500965F40 /* Grid Image EditorUITests.xctest */,
+				F49BCCEF2DB05CE400965F40 /* Griddy.app */,
+				F49BCCFD2DB05CE500965F40 /* GriddyTests.xctest */,
+				F49BCD072DB05CE500965F40 /* GriddyUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -95,9 +95,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		F49BCCEE2DB05CE400965F40 /* Grid Image Editor */ = {
+		F49BCCEE2DB05CE400965F40 /* Griddy */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = F49BCD112DB05CE500965F40 /* Build configuration list for PBXNativeTarget "Grid Image Editor" */;
+			buildConfigurationList = F49BCD112DB05CE500965F40 /* Build configuration list for PBXNativeTarget "Griddy" */;
 			buildPhases = (
 				F49BCCEB2DB05CE400965F40 /* Sources */,
 				F49BCCEC2DB05CE400965F40 /* Frameworks */,
@@ -108,18 +108,18 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				F49BCCF12DB05CE400965F40 /* Grid Image Editor */,
+				F49BCCF12DB05CE400965F40 /* Griddy */,
 			);
-			name = "Grid Image Editor";
+			name = Griddy;
 			packageProductDependencies = (
 			);
 			productName = "Grid Image Editor";
-			productReference = F49BCCEF2DB05CE400965F40 /* Grid Image Editor.app */;
+			productReference = F49BCCEF2DB05CE400965F40 /* Griddy.app */;
 			productType = "com.apple.product-type.application";
 		};
-		F49BCCFC2DB05CE500965F40 /* Grid Image EditorTests */ = {
+		F49BCCFC2DB05CE500965F40 /* GriddyTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = F49BCD142DB05CE500965F40 /* Build configuration list for PBXNativeTarget "Grid Image EditorTests" */;
+			buildConfigurationList = F49BCD142DB05CE500965F40 /* Build configuration list for PBXNativeTarget "GriddyTests" */;
 			buildPhases = (
 				F49BCCF92DB05CE500965F40 /* Sources */,
 				F49BCCFA2DB05CE500965F40 /* Frameworks */,
@@ -131,18 +131,18 @@
 				F49BCCFF2DB05CE500965F40 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				F49BCD002DB05CE500965F40 /* Grid Image EditorTests */,
+				F49BCD002DB05CE500965F40 /* GriddyTests */,
 			);
-			name = "Grid Image EditorTests";
+			name = GriddyTests;
 			packageProductDependencies = (
 			);
 			productName = "Grid Image EditorTests";
-			productReference = F49BCCFD2DB05CE500965F40 /* Grid Image EditorTests.xctest */;
+			productReference = F49BCCFD2DB05CE500965F40 /* GriddyTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		F49BCD062DB05CE500965F40 /* Grid Image EditorUITests */ = {
+		F49BCD062DB05CE500965F40 /* GriddyUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = F49BCD172DB05CE500965F40 /* Build configuration list for PBXNativeTarget "Grid Image EditorUITests" */;
+			buildConfigurationList = F49BCD172DB05CE500965F40 /* Build configuration list for PBXNativeTarget "GriddyUITests" */;
 			buildPhases = (
 				F49BCD032DB05CE500965F40 /* Sources */,
 				F49BCD042DB05CE500965F40 /* Frameworks */,
@@ -154,13 +154,13 @@
 				F49BCD092DB05CE500965F40 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				F49BCD0A2DB05CE500965F40 /* Grid Image EditorUITests */,
+				F49BCD0A2DB05CE500965F40 /* GriddyUITests */,
 			);
-			name = "Grid Image EditorUITests";
+			name = GriddyUITests;
 			packageProductDependencies = (
 			);
 			productName = "Grid Image EditorUITests";
-			productReference = F49BCD072DB05CE500965F40 /* Grid Image EditorUITests.xctest */;
+			productReference = F49BCD072DB05CE500965F40 /* GriddyUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -186,7 +186,7 @@
 					};
 				};
 			};
-			buildConfigurationList = F49BCCEA2DB05CE400965F40 /* Build configuration list for PBXProject "Grid Image Editor" */;
+			buildConfigurationList = F49BCCEA2DB05CE400965F40 /* Build configuration list for PBXProject "Griddy" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -200,9 +200,9 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				F49BCCEE2DB05CE400965F40 /* Grid Image Editor */,
-				F49BCCFC2DB05CE500965F40 /* Grid Image EditorTests */,
-				F49BCD062DB05CE500965F40 /* Grid Image EditorUITests */,
+				F49BCCEE2DB05CE400965F40 /* Griddy */,
+				F49BCCFC2DB05CE500965F40 /* GriddyTests */,
+				F49BCD062DB05CE500965F40 /* GriddyUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -258,12 +258,12 @@
 /* Begin PBXTargetDependency section */
 		F49BCCFF2DB05CE500965F40 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = F49BCCEE2DB05CE400965F40 /* Grid Image Editor */;
+			target = F49BCCEE2DB05CE400965F40 /* Griddy */;
 			targetProxy = F49BCCFE2DB05CE500965F40 /* PBXContainerItemProxy */;
 		};
 		F49BCD092DB05CE500965F40 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = F49BCCEE2DB05CE400965F40 /* Grid Image Editor */;
+			target = F49BCCEE2DB05CE400965F40 /* Griddy */;
 			targetProxy = F49BCD082DB05CE500965F40 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -394,7 +394,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = "Grid Image Editor/Grid_Image_Editor.entitlements";
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				CODE_SIGN_ENTITLEMENTS = Griddy/Griddy.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
@@ -402,13 +404,17 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_FILE = "Grid-Image-Editor-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = Griddy;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.graphics-design";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Tile Mapper\\n2025 digitalmints.com";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "Miskatonic-University-Press.Grid-Image-Editor";
+				PRODUCT_BUNDLE_IDENTIFIER = com.minzenmay.Griddy;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -421,7 +427,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
-				CODE_SIGN_ENTITLEMENTS = "Grid Image Editor/Grid_Image_Editor.entitlements";
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				CODE_SIGN_ENTITLEMENTS = Griddy/Griddy.entitlements;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "-";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
@@ -429,13 +437,17 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				INFOPLIST_FILE = "Grid-Image-Editor-Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = Griddy;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.graphics-design";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Tile Mapper\\n2025 digitalmints.com";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
 				);
+				MACOSX_DEPLOYMENT_TARGET = 15.0;
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "Miskatonic-University-Press.Grid-Image-Editor";
+				PRODUCT_BUNDLE_IDENTIFIER = com.minzenmay.Griddy;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -457,7 +469,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Grid Image Editor.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Grid Image Editor";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Griddy.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Griddy";
 			};
 			name = Debug;
 		};
@@ -475,7 +487,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Grid Image Editor.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Grid Image Editor";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Griddy.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/Griddy";
 			};
 			name = Release;
 		};
@@ -514,7 +526,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		F49BCCEA2DB05CE400965F40 /* Build configuration list for PBXProject "Grid Image Editor" */ = {
+		F49BCCEA2DB05CE400965F40 /* Build configuration list for PBXProject "Griddy" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F49BCD0F2DB05CE500965F40 /* Debug */,
@@ -523,7 +535,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		F49BCD112DB05CE500965F40 /* Build configuration list for PBXNativeTarget "Grid Image Editor" */ = {
+		F49BCD112DB05CE500965F40 /* Build configuration list for PBXNativeTarget "Griddy" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F49BCD122DB05CE500965F40 /* Debug */,
@@ -532,7 +544,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		F49BCD142DB05CE500965F40 /* Build configuration list for PBXNativeTarget "Grid Image EditorTests" */ = {
+		F49BCD142DB05CE500965F40 /* Build configuration list for PBXNativeTarget "GriddyTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F49BCD152DB05CE500965F40 /* Debug */,
@@ -541,7 +553,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		F49BCD172DB05CE500965F40 /* Build configuration list for PBXNativeTarget "Grid Image EditorUITests" */ = {
+		F49BCD172DB05CE500965F40 /* Build configuration list for PBXNativeTarget "GriddyUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				F49BCD182DB05CE500965F40 /* Debug */,
