@@ -109,7 +109,7 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         alert.alertStyle = .warning
 
         let response: NSApplication.ModalResponse
-        if let window = window, !isTerminating {
+        if let _ = window, !isTerminating {
             print("[AppDelegate showUnsavedChangesAlert] Running modal sheet for window.")
             response = alert.runModal()
         } else {
@@ -131,14 +131,14 @@ class AppDelegate: NSObject, NSApplicationDelegate, NSWindowDelegate {
         print("[AppDelegate] Current window count before action: \(sender.windows.count)")
 
         if !flag {
-            if let existingWindow = sender.windows.first {
-                print("[AppDelegate] Found existing hidden window: \(existingWindow.title). Making key and ordering front.")
-                if self.windowDelegateMap.object(forKey: existingWindow) == nil {
-                    print("[AppDelegate] Re-setting delegate on reopen for window: \(existingWindow.title)")
-                    existingWindow.delegate = self
-                    self.windowDelegateMap.setObject(self, forKey: existingWindow)
+            if let _ = sender.windows.first {
+                print("[AppDelegate] Found existing hidden window: \(sender.windows.first!.title). Making key and ordering front.")
+                if self.windowDelegateMap.object(forKey: sender.windows.first!) == nil {
+                    print("[AppDelegate] Re-setting delegate on reopen for window: \(sender.windows.first!.title)")
+                    sender.windows.first!.delegate = self
+                    self.windowDelegateMap.setObject(self, forKey: sender.windows.first!)
                 }
-                existingWindow.makeKeyAndOrderFront(self)
+                sender.windows.first!.makeKeyAndOrderFront(self)
                 print("[AppDelegate] Returning false as we handled the reopen by showing an existing window.")
                 return false
             } else {

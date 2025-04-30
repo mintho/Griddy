@@ -41,9 +41,10 @@ struct GridOverlay: View {
     let scrollableContentID: String
     @Binding var externalContentOffset: CGPoint
     let visibleSize: CGSize
-    let contentSize: CGSize
+    let contentSize: CGSize // This is the ZStack's size from FileView
     let scrollViewGlobalFrame: CGRect
-    
+    let contentViewInset: CGFloat // Margin inside the ZStack, around GridOverlay
+
     // MARK: - Drag State
     @State private var isDragging: Bool = false
     @State private var dragStartCell: GridCell? = nil
@@ -52,14 +53,13 @@ struct GridOverlay: View {
     // MARK: - Auto-Scroll State & Config
     @State private var autoScrollTimer: Timer? = nil
     @State private var autoScrollDirection: Set<Direction> = []
-    @State private var localDragLocation: CGPoint = .zero
-    private let autoScrollMargin: CGFloat = 50.0
-    private let autoScrollAmount: CGFloat = 15.0
+    private let autoScrollMargin: CGFloat = 60.0
     private let autoScrollTimerInterval: TimeInterval = 0.02
+    @State private var scrollSpeedX: CGFloat = 0
+    @State private var scrollSpeedY: CGFloat = 0
     
-    // MARK: - Additional State for Continuous Updates
-    @State private var initialLocalDragLocation: CGPoint? = nil
-    @State private var initialContentOffset: CGPoint? = nil
+    @State private var initialLocalDragLocationForScrollHandling: CGPoint? = nil
+    @State private var initialContentOffsetForScrollHandling: CGPoint? = nil
     
     // MARK: - Computed Properties
     private var cellsInDragRectangle: Set<GridCell> {
@@ -78,35 +78,140 @@ struct GridOverlay: View {
                 }
             }
         }
-        
         return cells
     }
     
     private var isValidGrid: Bool {
-        gridRows > 0 && gridColumns > 0 && gridData.count == gridRows && gridData.first?.count == gridColumns
+        gridRows > 0 && gridColumns > 0 &&
+        gridData.count == gridRows && (gridData.first?.count ?? 0) == gridColumns
     }
     
-    private let GRID_CELL_SIZE: CGFloat = 8.0
-    
-    // MARK: - Body
+    private let GRID_CELL_SIZE_CONST: CGFloat = GRID_CELL_SIZE
+
     var body: some View {
         if isValidGrid {
             GeometryReader { geometry in
-                let localSize = geometry.size
-                let cellWidth = gridColumns > 0 ? localSize.width / CGFloat(gridColumns) : 0
-                let cellHeight = gridRows > 0 ? localSize.height / CGFloat(gridRows) : 0
-                let scaledCellSize = GRID_CELL_SIZE * zoomLevel
-                let showGridLines = scaledCellSize > 4
+                let localSize = geometry.size // Size of GridOverlay itself (scaled image size)
+                let scaledCellWidth = GRID_CELL_SIZE_CONST * zoomLevel
+                let scaledCellHeight = GRID_CELL_SIZE_CONST * zoomLevel
                 
+                let showGridLines = (scaledCellWidth > 3.0 || scaledCellHeight > 3.0) && zoomLevel > 0.1
+
                 ZStack(alignment: .topLeading) {
-                    drawGridCells(in: geometry.frame(in: .local), cellWidth: cellWidth, cellHeight: cellHeight)
-                    
-                    if showGridLines {
-                        drawGridLines(in: geometry.frame(in: .local), cellWidth: cellWidth, cellHeight: cellHeight)
+                    Canvas { context, size in
+                        guard scaledCellWidth > 0, scaledCellHeight > 0 else { return }
+
+                        let viewportOriginInGridOverlayX = externalContentOffset.x - contentViewInset
+                        let viewportOriginInGridOverlayY = externalContentOffset.y - contentViewInset
+                        
+                        let visibleRectInGridOverlayCoords = CGRect(
+                            x: viewportOriginInGridOverlayX,
+                            y: viewportOriginInGridOverlayY,
+                            width: visibleSize.width,
+                            height: visibleSize.height
+                        )
+
+                        let startRowCells = max(0, Int(floor(visibleRectInGridOverlayCoords.minY / scaledCellHeight)))
+                        let endRowCellsExclusive = min(gridRows, Int(ceil(visibleRectInGridOverlayCoords.maxY / scaledCellHeight)))
+                        
+                        let startColCells = max(0, Int(floor(visibleRectInGridOverlayCoords.minX / scaledCellWidth)))
+                        let endColCellsExclusive = min(gridColumns, Int(ceil(visibleRectInGridOverlayCoords.maxX / scaledCellWidth)))
+                        
+                        if startRowCells < endRowCellsExclusive && startColCells < endColCellsExclusive {
+                            for row in startRowCells..<endRowCellsExclusive {
+                                for col in startColCells..<endColCellsExclusive {
+                                    if row < gridData.count && col < (gridData.first?.count ?? 0) {
+                                        let colorIndex = gridData[row][col]
+                                        if colorIndex > 0 {
+                                            let x = CGFloat(col) * scaledCellWidth
+                                            let y = CGFloat(row) * scaledCellHeight
+                                            let rect = CGRect(x: x, y: y, width: scaledCellWidth, height: scaledCellHeight)
+                                            context.fill(Path(rect), with: .color(ColorPalette.gridColor(for: colorIndex)))
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        
+                        if showGridLines {
+                            let targetScreenPixelLineWidth: CGFloat
+                            let lineOpacity: Double
+
+                            if zoomLevel > 2.0 {
+                                targetScreenPixelLineWidth = 1.0
+                                lineOpacity = 0.60
+                            } else if zoomLevel > 1.0 {
+                                targetScreenPixelLineWidth = 0.8
+                                lineOpacity = 0.45
+                            } else if zoomLevel > 0.5 {
+                                targetScreenPixelLineWidth = 0.6
+                                lineOpacity = 0.35
+                            } else {
+                                targetScreenPixelLineWidth = 0.5
+                                lineOpacity = 0.3
+                            }
+                            
+                            let effectiveZoomLevelForLineWidth = max(0.1, zoomLevel)
+                            let lineRenderWidth = max(0.1 / effectiveZoomLevelForLineWidth, targetScreenPixelLineWidth / effectiveZoomLevelForLineWidth)
+                            let lineColor = Color.black.opacity(lineOpacity)
+                            
+                            let lineDrawingMinX = CGFloat(startColCells) * scaledCellWidth
+                            let lineDrawingMaxX = CGFloat(endColCellsExclusive) * scaledCellWidth
+                            let lineDrawingMinY = CGFloat(startRowCells) * scaledCellHeight
+                            let lineDrawingMaxY = CGFloat(endRowCellsExclusive) * scaledCellHeight
+                            
+                            // Iterate for vertical lines (from col 0 to gridColumns)
+                            // but only draw if they are within the visible cell drawing area.
+                            let firstLineColToDraw = startColCells
+                            let lastLineColToDraw = endColCellsExclusive // Draw line at the right of the last visible column of cells
+
+                            if firstLineColToDraw <= lastLineColToDraw {
+                                for col_idx in firstLineColToDraw...lastLineColToDraw {
+                                    let x = CGFloat(col_idx) * scaledCellWidth
+                                    // Ensure the line itself is within the broader visible area to avoid unnecessary drawing
+                                    if x >= visibleRectInGridOverlayCoords.minX - scaledCellWidth && x <= visibleRectInGridOverlayCoords.maxX + scaledCellWidth {
+                                        context.stroke(Path { path in
+                                            path.move(to: CGPoint(x: x, y: lineDrawingMinY))
+                                            path.addLine(to: CGPoint(x: x, y: lineDrawingMaxY))
+                                        }, with: .color(lineColor), lineWidth: lineRenderWidth)
+                                    }
+                                }
+                            }
+                            
+                            // Iterate for horizontal lines (from row 0 to gridRows)
+                            let firstLineRowToDraw = startRowCells
+                            let lastLineRowToDraw = endRowCellsExclusive // Draw line at the bottom of the last visible row of cells
+
+                            if firstLineRowToDraw <= lastLineRowToDraw {
+                                for row_idx in firstLineRowToDraw...lastLineRowToDraw {
+                                    let y = CGFloat(row_idx) * scaledCellHeight
+                                    if y >= visibleRectInGridOverlayCoords.minY - scaledCellHeight && y <= visibleRectInGridOverlayCoords.maxY + scaledCellHeight {
+                                        context.stroke(Path { path in
+                                            path.move(to: CGPoint(x: lineDrawingMinX, y: y))
+                                            path.addLine(to: CGPoint(x: lineDrawingMaxX, y: y))
+                                        }, with: .color(lineColor), lineWidth: lineRenderWidth)
+                                    }
+                                }
+                            }
+                        }
                     }
+                    .frame(width: localSize.width, height: localSize.height)
                     
-                    if isDragging {
-                        drawDragPreview(in: geometry.frame(in: .local), cellWidth: cellWidth, cellHeight: cellHeight)
+                    if isDragging, let start = dragStartCell, let current = dragCurrentCell {
+                        let minR = min(start.row, current.row)
+                        let maxR = max(start.row, current.row)
+                        let minC = min(start.col, current.col)
+                        let maxC = max(start.col, current.col)
+                        
+                        let previewX = CGFloat(minC) * scaledCellWidth
+                        let previewY = CGFloat(minR) * scaledCellHeight
+                        let previewWidth = CGFloat(maxC - minC + 1) * scaledCellWidth
+                        let previewHeight = CGFloat(maxR - minR + 1) * scaledCellHeight
+                        
+                        Rectangle()
+                            .fill(calculatePreviewColor())
+                            .frame(width: previewWidth, height: previewHeight)
+                            .offset(x: previewX, y: previewY)
                     }
                 }
                 .contentShape(Rectangle())
@@ -114,25 +219,28 @@ struct GridOverlay: View {
                     DragGesture(minimumDistance: 0, coordinateSpace: .local)
                         .onChanged { value in
                             let localLocation = value.location
-                            self.localDragLocation = localLocation
-                            initialLocalDragLocation = localLocation
-                            initialContentOffset = externalContentOffset
                             let currentCell = mapPointToCell(localPoint: localLocation)
                             
                             if !isDragging {
                                 isDragging = true
                                 dragStartCell = currentCell
-                                dragCurrentCell = currentCell
-                            } else if currentCell != dragCurrentCell {
+                                initialLocalDragLocationForScrollHandling = localLocation
+                                initialContentOffsetForScrollHandling = externalContentOffset
+                            }
+                            
+                            if currentCell != dragCurrentCell {
                                 dragCurrentCell = currentCell
                             }
                             
-                            determineScrollDirection()
+                            let mouseLocationInViewport = CGPoint(
+                                x: (localLocation.x + contentViewInset) - externalContentOffset.x,
+                                y: (localLocation.y + contentViewInset) - externalContentOffset.y
+                            )
+                            determineScrollDirection(mouseLocalToScrollViewVisibleArea: mouseLocationInViewport)
                             manageAutoScrollTimer()
                         }
                         .onEnded { value in
                             let localLocation = value.location
-                            self.localDragLocation = localLocation
                             let endCell = mapPointToCell(localPoint: localLocation)
                             dragCurrentCell = endCell
                             
@@ -140,7 +248,6 @@ struct GridOverlay: View {
                             let dragThreshold: CGFloat = 5.0
                             var cellsToPaint = Set<GridCell>()
                             
-                            // Determine if it's a single cell click or a drag rectangle
                             if !isDragging || (dragDistance < dragThreshold && dragStartCell == endCell) {
                                 if let cell = endCell, cell.isValid(rows: gridRows, cols: gridColumns) {
                                     cellsToPaint.insert(cell)
@@ -152,18 +259,25 @@ struct GridOverlay: View {
                             if !cellsToPaint.isEmpty {
                                 onPaint(cellsToPaint, selectedColorIndex)
                             }
-                            
                             resetDragState()
                         }
                 )
-                .onChange(of: externalContentOffset) { _, newOffset in
+                .onChange(of: externalContentOffset) { oldOffset, newOffset in
                     if isDragging {
-                        if let initialLoc = initialLocalDragLocation, let initialOff = initialContentOffset {
-                            let delta = CGPoint(x: newOffset.x - initialOff.x, y: newOffset.y - initialOff.y)
-                            let currentLoc = CGPoint(x: initialLoc.x + delta.x, y: initialLoc.y + delta.y)
-                            let currentCell = mapPointToCell(localPoint: currentLoc)
+                        if let initialLocalDrag = initialLocalDragLocationForScrollHandling,
+                           let initialContentOffset = initialContentOffsetForScrollHandling {
                             
-                            if let cell = currentCell {
+                            let contentScrollDelta = CGPoint(x: newOffset.x - initialContentOffset.x,
+                                                             y: newOffset.y - initialContentOffset.y)
+                            
+                            let currentEffectiveLocalLocation = CGPoint(
+                                x: initialLocalDrag.x - contentScrollDelta.x,
+                                y: initialLocalDrag.y - contentScrollDelta.y
+                            )
+                            
+                            let currentCell = mapPointToCell(localPoint: currentEffectiveLocalLocation)
+                            
+                            if let cell = currentCell, cell != dragCurrentCell {
                                 dragCurrentCell = cell
                             }
                         }
@@ -176,139 +290,69 @@ struct GridOverlay: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
     }
-    
-    // MARK: - Drawing Helpers
-    @ViewBuilder
-    private func drawGridCells(in rect: CGRect, cellWidth: CGFloat, cellHeight: CGFloat) -> some View {
-        if cellWidth > 0 && cellHeight > 0 && gridRows > 0 && gridColumns > 0 {
-            ZStack(alignment: .topLeading) {
-                ForEach(0..<gridRows, id: \.self) { row in
-                    ForEach(0..<gridColumns, id: \.self) { col in
-                        if row < gridData.count && col < gridData[row].count {
-                            let colorIndex = gridData[row][col]
-                            if colorIndex > 0 {
-                                let x = CGFloat(col) * cellWidth
-                                let y = CGFloat(row) * cellHeight
-                                
-                                Rectangle()
-                                    .fill(ColorPalette.gridColor(for: colorIndex))
-                                    .frame(width: cellWidth, height: cellHeight)
-                                    .offset(x: x, y: y)
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    
-    @ViewBuilder
-    private func drawGridLines(in rect: CGRect, cellWidth: CGFloat, cellHeight: CGFloat) -> some View {
-        if cellWidth > 0 && cellHeight > 0 && gridRows > 0 && gridColumns > 0 {
-            Path { path in
-                for col in 0...gridColumns {
-                    let x = CGFloat(col) * cellWidth
-                    path.move(to: CGPoint(x: x, y: rect.minY))
-                    path.addLine(to: CGPoint(x: x, y: rect.maxY))
-                }
-                
-                for row in 0...gridRows {
-                    let y = CGFloat(row) * cellHeight
-                    path.move(to: CGPoint(x: rect.minX, y: y))
-                    path.addLine(to: CGPoint(x: rect.maxX, y: y))
-                }
-            }
-            .stroke(Color.black.opacity(0.3), lineWidth: max(0.1, 0.5 / zoomLevel))
-        }
-    }
-    
-    @ViewBuilder
-    private func drawDragPreview(in rect: CGRect, cellWidth: CGFloat, cellHeight: CGFloat) -> some View {
-        if cellWidth > 0 && cellHeight > 0 && gridRows > 0 && gridColumns > 0 {
-            let previewColor = calculatePreviewColor()
-            
-            ZStack(alignment: .topLeading) {
-                ForEach(Array(cellsInDragRectangle), id: \.self) { cell in
-                    if cell.isValid(rows: gridRows, cols: gridColumns) {
-                        Rectangle()
-                            .fill(previewColor)
-                            .frame(width: cellWidth, height: cellHeight)
-                            .offset(x: CGFloat(cell.col) * cellWidth, y: CGFloat(cell.row) * cellHeight)
-                            .allowsHitTesting(false)
-                    }
-                }
-            }
-        }
-    }
-    
+        
     private func calculatePreviewColor() -> Color {
         selectedColorIndex == 0 ? Color.white.opacity(0.4) : ColorPalette.gridColor(for: selectedColorIndex).opacity(0.6)
     }
     
-    // MARK: - Cell Mapping
     private func mapPointToCell(localPoint: CGPoint) -> GridCell? {
-        guard GRID_CELL_SIZE > 0, zoomLevel > 0 else { return nil }
-        let renderedCellWidth = GRID_CELL_SIZE * zoomLevel
-        let renderedCellHeight = GRID_CELL_SIZE * zoomLevel
-        guard renderedCellWidth > 0, renderedCellHeight > 0 else { return nil }
+        guard GRID_CELL_SIZE_CONST > 0, zoomLevel > 0, gridColumns > 0, gridRows > 0 else { return nil }
         
-        let col = Int(floor(localPoint.x / renderedCellWidth))
-        let row = Int(floor(localPoint.y / renderedCellHeight))
+        let currentCellWidth = GRID_CELL_SIZE_CONST * zoomLevel
+        let currentCellHeight = GRID_CELL_SIZE_CONST * zoomLevel
+
+        guard currentCellWidth > 0, currentCellHeight > 0 else { return nil }
+        
+        let col = Int(floor(localPoint.x / currentCellWidth))
+        let row = Int(floor(localPoint.y / currentCellHeight))
+        
         let cell = GridCell(row: row, col: col)
-        
         return cell.isValid(rows: gridRows, cols: gridColumns) ? cell : nil
     }
     
-    // MARK: - Auto-Scroll Logic
-    private func determineScrollDirection() {
-        // Calculate mouse position relative to the scroll view's global frame
-        guard let screen = NSScreen.main else { return }
-        let screenHeight = screen.frame.height
-        let mouseLocation = NSEvent.mouseLocation
-        let globalMousePoint = CGPoint(x: mouseLocation.x, y: screenHeight - mouseLocation.y)
-        let scrollViewPoint = CGPoint(
-            x: globalMousePoint.x - scrollViewGlobalFrame.minX,
-            y: globalMousePoint.y - scrollViewGlobalFrame.minY
-        )
+    private func determineScrollDirection(mouseLocalToScrollViewVisibleArea: CGPoint) {
         var directions: Set<Direction> = []
+        let maxScrollSpeed: CGFloat = 1500.0
         
-        let visibleX = scrollViewPoint.x
-        let visibleY = scrollViewPoint.y
+        scrollSpeedX = 0
+        scrollSpeedY = 0
         
-        if visibleX < autoScrollMargin {
+        if mouseLocalToScrollViewVisibleArea.x < autoScrollMargin {
             directions.insert(.left)
-        } else if visibleX > visibleSize.width - autoScrollMargin {
+            scrollSpeedX = -((1.0 - max(0, mouseLocalToScrollViewVisibleArea.x) / autoScrollMargin).clamped(to: 0...1) * maxScrollSpeed)
+        } else if mouseLocalToScrollViewVisibleArea.x > visibleSize.width - autoScrollMargin {
             directions.insert(.right)
+            let distFromRightEdge = visibleSize.width - mouseLocalToScrollViewVisibleArea.x
+            scrollSpeedX = (1.0 - max(0, distFromRightEdge) / autoScrollMargin).clamped(to: 0...1) * maxScrollSpeed
         }
         
-        if visibleY < autoScrollMargin {
+        if mouseLocalToScrollViewVisibleArea.y < autoScrollMargin {
             directions.insert(.up)
-        } else if visibleY > visibleSize.height - autoScrollMargin {
+            scrollSpeedY = -((1.0 - max(0, mouseLocalToScrollViewVisibleArea.y) / autoScrollMargin).clamped(to: 0...1) * maxScrollSpeed)
+        } else if mouseLocalToScrollViewVisibleArea.y > visibleSize.height - autoScrollMargin {
             directions.insert(.down)
+            let distFromBottomEdge = visibleSize.height - mouseLocalToScrollViewVisibleArea.y
+            scrollSpeedY = (1.0 - max(0, distFromBottomEdge) / autoScrollMargin).clamped(to: 0...1) * maxScrollSpeed
         }
         
-        if directions != self.autoScrollDirection {
-            self.autoScrollDirection = directions
-        }
+        self.autoScrollDirection = directions
     }
     
     private func manageAutoScrollTimer() {
-        let shouldBeScrolling = !autoScrollDirection.isEmpty
+        let shouldBeScrolling = isDragging && !autoScrollDirection.isEmpty
         
         if shouldBeScrolling && autoScrollTimer == nil {
-            autoScrollTimer = Timer.scheduledTimer(withTimeInterval: autoScrollTimerInterval, repeats: true) { _ in
+            autoScrollTimer = Timer.scheduledTimer(withTimeInterval: autoScrollTimerInterval, repeats: true) { timer in
                 DispatchQueue.main.async {
-                    self.determineScrollDirection()
-                    
-                    if !self.autoScrollDirection.isEmpty {
+                    if self.isDragging && !self.autoScrollDirection.isEmpty {
                         self.performAutoScroll()
                     } else {
-                        self.autoScrollTimer?.invalidate()
+                        timer.invalidate()
                         self.autoScrollTimer = nil
                     }
                 }
             }
-        } else if !shouldBeScrolling && autoScrollTimer != nil {
+        } else if (!shouldBeScrolling || !isDragging) && autoScrollTimer != nil {
             autoScrollTimer?.invalidate()
             autoScrollTimer = nil
         }
@@ -317,69 +361,44 @@ struct GridOverlay: View {
     private func performAutoScroll() {
         guard !autoScrollDirection.isEmpty else { return }
         
-        let currentOffset = externalContentOffset
-        var deltaX: CGFloat = 0
-        var deltaY: CGFloat = 0
+        let deltaX = scrollSpeedX * autoScrollTimerInterval
+        let deltaY = scrollSpeedY * autoScrollTimerInterval
         
-        // Calculate scroll intensity based on distance from the center
-        let viewportX = localDragLocation.x - externalContentOffset.x
-        let viewportY = localDragLocation.y - externalContentOffset.y
-        let centerX = visibleSize.width / 2
-        let centerY = visibleSize.height / 2
-        let distanceX = abs(viewportX - centerX)
-        let distanceY = abs(viewportY - centerY)
-        let maxDistanceX = centerX
-        let maxDistanceY = centerY
-        let intensityX = (distanceX / maxDistanceX).clamped(to: 0...1)
-        let intensityY = (distanceY / maxDistanceY).clamped(to: 0...1)
-        let speedFactorX = pow(intensityX, 3)
-        let speedFactorY = pow(intensityY, 3)
-        let baseScrollAmount: CGFloat = 55.0
-        let scrollAmountX = baseScrollAmount * speedFactorX
-        let scrollAmountY = baseScrollAmount * speedFactorY
+        var targetX = externalContentOffset.x + deltaX
+        var targetY = externalContentOffset.y + deltaY
         
-        if autoScrollDirection.contains(.left) { deltaX -= scrollAmountX }
-        if autoScrollDirection.contains(.right) { deltaX += scrollAmountX }
-        if autoScrollDirection.contains(.up) { deltaY -= scrollAmountY }
-        if autoScrollDirection.contains(.down) { deltaY += scrollAmountY }
+        let maxX = max(0, self.contentSize.width - self.visibleSize.width)
+        let maxY = max(0, self.contentSize.height - self.visibleSize.height)
         
-        let targetX = currentOffset.x + deltaX
-        let targetY = currentOffset.y + deltaY
+        targetX = targetX.clamped(to: 0...maxX)
+        targetY = targetY.clamped(to: 0...maxY)
         
-        let maxX = max(0, contentSize.width - visibleSize.width)
-        let maxY = max(0, contentSize.height - visibleSize.height)
-        let clampedX = targetX.clamped(to: 0...maxX)
-        let clampedY = targetY.clamped(to: 0...maxY)
-        let targetOffset = CGPoint(x: clampedX, y: clampedY)
+        let targetOffset = CGPoint(x: targetX, y: targetY)
         
-        guard targetOffset != currentOffset else { return }
-        
-        let denominatorX = max(1e-6, contentSize.width - visibleSize.width)
-        let denominatorY = max(1e-6, contentSize.height - visibleSize.height)
-        let anchorX = clampedX / denominatorX
-        let anchorY = clampedY / denominatorY
-        let targetAnchor = UnitPoint(x: anchorX.clamped(to: 0...1), y: anchorY.clamped(to: 0...1))
-        
-        scrollProxy.scrollTo(scrollableContentID, anchor: targetAnchor)
+        if targetOffset != externalContentOffset {
+            let scrollableWidth = self.contentSize.width - self.visibleSize.width
+            let scrollableHeight = self.contentSize.height - self.visibleSize.height
+            
+            let anchorX = scrollableWidth > 0 ? (targetX / scrollableWidth).clamped(to: 0...1) : 0.5
+            let anchorY = scrollableHeight > 0 ? (targetY / scrollableHeight).clamped(to: 0...1) : 0.5
+            
+            scrollProxy.scrollTo(scrollableContentID, anchor: UnitPoint(x: anchorX, y: anchorY))
+        }
     }
     
     private func resetDragState() {
         isDragging = false
         dragStartCell = nil
         dragCurrentCell = nil
+        initialLocalDragLocationForScrollHandling = nil
+        initialContentOffsetForScrollHandling = nil
         
         if autoScrollTimer != nil {
             autoScrollTimer?.invalidate()
             autoScrollTimer = nil
         }
-        
         autoScrollDirection = []
-    }
-}
-
-// MARK: - Extensions
-extension CGFloat {
-    func clamped(to range: ClosedRange<CGFloat>) -> CGFloat {
-        Swift.max(range.lowerBound, Swift.min(range.upperBound, self))
+        scrollSpeedX = 0
+        scrollSpeedY = 0
     }
 }
