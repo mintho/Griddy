@@ -6,6 +6,24 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		F4472EEC2DB9CB290056F8AB /* MenuCommands.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4472EE72DB9CB290056F8AB /* MenuCommands.swift */; };
+		F4472EED2DB9CB290056F8AB /* ProjectData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4472EE82DB9CB290056F8AB /* ProjectData.swift */; };
+		F4472EEE2DB9CB290056F8AB /* TabBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4472EEA2DB9CB290056F8AB /* TabBarView.swift */; };
+		F4472EEF2DB9CB290056F8AB /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4472EDC2DB9CB290056F8AB /* AppDelegate.swift */; };
+		F4472EF02DB9CB290056F8AB /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4472EDD2DB9CB290056F8AB /* AppState.swift */; };
+		F4472EF12DB9CB290056F8AB /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4472EDF2DB9CB290056F8AB /* ContentView.swift */; };
+		F4472EF22DB9CB290056F8AB /* FileState.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4472EE02DB9CB290056F8AB /* FileState.swift */; };
+		F4472EF32DB9CB290056F8AB /* FileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4472EE12DB9CB290056F8AB /* FileView.swift */; };
+		F4472EF42DB9CB290056F8AB /* Grid_Image_EditorApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4472EE22DB9CB290056F8AB /* Grid_Image_EditorApp.swift */; };
+		F4472EF52DB9CB290056F8AB /* GridOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4472EE42DB9CB290056F8AB /* GridOverlay.swift */; };
+		F4472EF72DB9CB290056F8AB /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = F4472EE62DB9CB290056F8AB /* LICENSE */; };
+		F4472EF82DB9CB290056F8AB /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = F4472EE92DB9CB290056F8AB /* README.md */; };
+		F4472EF92DB9CB290056F8AB /* todo.txt in Resources */ = {isa = PBXBuildFile; fileRef = F4472EEB2DB9CB290056F8AB /* todo.txt */; };
+		F4472EFC2DB9CB290056F8AB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F4472EDE2DB9CB290056F8AB /* Assets.xcassets */; };
+		F4472F0E2DC02BE10056F8AB /* CustomScrollIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4472F0C2DC02BD30056F8AB /* CustomScrollIndicator.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		F49BCCFE2DB05CE500965F40 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -24,25 +42,31 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		F4472EDC2DB9CB290056F8AB /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		F4472EDD2DB9CB290056F8AB /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
+		F4472EDE2DB9CB290056F8AB /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		F4472EDF2DB9CB290056F8AB /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		F4472EE02DB9CB290056F8AB /* FileState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileState.swift; sourceTree = "<group>"; };
+		F4472EE12DB9CB290056F8AB /* FileView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileView.swift; sourceTree = "<group>"; };
+		F4472EE22DB9CB290056F8AB /* Grid_Image_EditorApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Grid_Image_EditorApp.swift; sourceTree = "<group>"; };
+		F4472EE32DB9CB290056F8AB /* Griddy.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Griddy.entitlements; sourceTree = "<group>"; };
+		F4472EE42DB9CB290056F8AB /* GridOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridOverlay.swift; sourceTree = "<group>"; };
+		F4472EE62DB9CB290056F8AB /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
+		F4472EE72DB9CB290056F8AB /* MenuCommands.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuCommands.swift; sourceTree = "<group>"; };
+		F4472EE82DB9CB290056F8AB /* ProjectData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectData.swift; sourceTree = "<group>"; };
+		F4472EE92DB9CB290056F8AB /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		F4472EEA2DB9CB290056F8AB /* TabBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarView.swift; sourceTree = "<group>"; };
+		F4472EEB2DB9CB290056F8AB /* todo.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = todo.txt; sourceTree = "<group>"; };
+		F4472F0C2DC02BD30056F8AB /* CustomScrollIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomScrollIndicator.swift; sourceTree = "<group>"; };
 		F49BCCEF2DB05CE400965F40 /* Griddy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Griddy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F49BCCFD2DB05CE500965F40 /* GriddyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GriddyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F49BCD072DB05CE500965F40 /* GriddyUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GriddyUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		F49BCCF12DB05CE400965F40 /* Griddy */ = {
+		F4472F112DC1AADC0056F8AB /* img */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = Griddy;
-			sourceTree = "<group>";
-		};
-		F49BCD002DB05CE500965F40 /* GriddyTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = GriddyTests;
-			sourceTree = "<group>";
-		};
-		F49BCD0A2DB05CE500965F40 /* GriddyUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = GriddyUITests;
+			path = img;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -75,10 +99,24 @@
 		F49BCCE62DB05CE400965F40 = {
 			isa = PBXGroup;
 			children = (
-				F49BCCF12DB05CE400965F40 /* Griddy */,
-				F49BCD002DB05CE500965F40 /* GriddyTests */,
-				F49BCD0A2DB05CE500965F40 /* GriddyUITests */,
 				F49BCCF02DB05CE400965F40 /* Products */,
+				F4472F112DC1AADC0056F8AB /* img */,
+				F4472EDC2DB9CB290056F8AB /* AppDelegate.swift */,
+				F4472EDD2DB9CB290056F8AB /* AppState.swift */,
+				F4472EDE2DB9CB290056F8AB /* Assets.xcassets */,
+				F4472EDF2DB9CB290056F8AB /* ContentView.swift */,
+				F4472F0C2DC02BD30056F8AB /* CustomScrollIndicator.swift */,
+				F4472EE02DB9CB290056F8AB /* FileState.swift */,
+				F4472EE12DB9CB290056F8AB /* FileView.swift */,
+				F4472EE22DB9CB290056F8AB /* Grid_Image_EditorApp.swift */,
+				F4472EE32DB9CB290056F8AB /* Griddy.entitlements */,
+				F4472EE42DB9CB290056F8AB /* GridOverlay.swift */,
+				F4472EE62DB9CB290056F8AB /* LICENSE */,
+				F4472EE72DB9CB290056F8AB /* MenuCommands.swift */,
+				F4472EE82DB9CB290056F8AB /* ProjectData.swift */,
+				F4472EE92DB9CB290056F8AB /* README.md */,
+				F4472EEA2DB9CB290056F8AB /* TabBarView.swift */,
+				F4472EEB2DB9CB290056F8AB /* todo.txt */,
 			);
 			sourceTree = "<group>";
 		};
@@ -108,7 +146,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				F49BCCF12DB05CE400965F40 /* Griddy */,
+				F4472F112DC1AADC0056F8AB /* img */,
 			);
 			name = Griddy;
 			packageProductDependencies = (
@@ -130,9 +168,6 @@
 			dependencies = (
 				F49BCCFF2DB05CE500965F40 /* PBXTargetDependency */,
 			);
-			fileSystemSynchronizedGroups = (
-				F49BCD002DB05CE500965F40 /* GriddyTests */,
-			);
 			name = GriddyTests;
 			packageProductDependencies = (
 			);
@@ -152,9 +187,6 @@
 			);
 			dependencies = (
 				F49BCD092DB05CE500965F40 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				F49BCD0A2DB05CE500965F40 /* GriddyUITests */,
 			);
 			name = GriddyUITests;
 			packageProductDependencies = (
@@ -212,6 +244,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F4472EF72DB9CB290056F8AB /* LICENSE in Resources */,
+				F4472EF82DB9CB290056F8AB /* README.md in Resources */,
+				F4472EF92DB9CB290056F8AB /* todo.txt in Resources */,
+				F4472EFC2DB9CB290056F8AB /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -236,6 +272,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F4472EEC2DB9CB290056F8AB /* MenuCommands.swift in Sources */,
+				F4472EED2DB9CB290056F8AB /* ProjectData.swift in Sources */,
+				F4472F0E2DC02BE10056F8AB /* CustomScrollIndicator.swift in Sources */,
+				F4472EEE2DB9CB290056F8AB /* TabBarView.swift in Sources */,
+				F4472EEF2DB9CB290056F8AB /* AppDelegate.swift in Sources */,
+				F4472EF02DB9CB290056F8AB /* AppState.swift in Sources */,
+				F4472EF12DB9CB290056F8AB /* ContentView.swift in Sources */,
+				F4472EF22DB9CB290056F8AB /* FileState.swift in Sources */,
+				F4472EF32DB9CB290056F8AB /* FileView.swift in Sources */,
+				F4472EF42DB9CB290056F8AB /* Grid_Image_EditorApp.swift in Sources */,
+				F4472EF52DB9CB290056F8AB /* GridOverlay.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
