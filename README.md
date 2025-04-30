@@ -46,7 +46,7 @@ It works by overlaying an 8x8 pixel grid onto a PNG image (like a level map back
 
 **1. Pre-built Application (Recommended):**
 
-*   Go to the **[Releases](https://github.com/YOUR_USERNAME/Griddy/releases)** page of this repository. (**<- UPDATE THIS LINK**)
+*   Go to the **[Releases](https://github.com/mintho/Griddy/releases)** page of this repository. 
 *   Download the latest `Griddy_vX.Y.Z.zip`.
 *   Unzip and drag `Griddy.app` to your `/Applications` folder.
 *   **First Launch:** Right-click `Griddy.app` -> "Open" -> Confirm "Open" in the dialog. (This may be required due to macOS Gatekeeper).
@@ -55,7 +55,7 @@ It works by overlaying an 8x8 pixel grid onto a PNG image (like a level map back
 
 *   **Prerequisites:** macOS 14.0+, Xcode 15.0+, Git.
 *   **Steps:**
-    1.  `git clone https://github.com/YOUR_USERNAME/Griddy.git` (**<- UPDATE THIS LINK**)
+    1.  `git clone https://github.com/mintho/Griddy.git`
     2.  `cd Griddy`
     3.  Open `Griddy.xcodeproj` in Xcode.
     4.  Select the `Griddy` scheme and "My Mac".
@@ -96,10 +96,6 @@ It works by overlaying an 8x8 pixel grid onto a PNG image (like a level map back
 *   **`.griddy`:** Native JSON project file containing the original PNG image data and the current grid data array.
 *   **`.c` / `.h`:** Standard C source and header files containing the grid data as a `const u16` 2D array, suitable for SGDK.
 *   **`.csv`:** Comma-separated values (0-9) representing the grid, row by row.
-
-## Contributing
-
-Found a bug or have an idea? Please open an [Issue](https://github.com/YOUR_USERNAME/Griddy/issues). (**<- UPDATE THIS LINK**) Pull requests are also welcome!
 
 ## License
 
