@@ -158,6 +158,7 @@ struct ContentView: View {
         .onChange(of: appState.showExportCSVPanel) { if $1 { presentCSVSavePanel() } }
         .onChange(of: appState.showExportCHPanel) { if $1 { presentCHSavePanel() } }
         .onChange(of: appState.showImportCPanel) { if $1 { presentCSourceOpenPanel() } }
+        .onChange(of: appState.showExportTMXPanel) { if $1 { presentTMXSavePanel() } }
     }
     
     private func handleFileImporterResult(result: Result<[URL], Error>, type: FileType) {
@@ -209,65 +210,98 @@ struct ContentView: View {
     
     private func handleDrop(providers: [NSItemProvider]) -> Bool {
         guard let provider = providers.first else { return false }
-        
-        if provider.canLoadObject(ofClass: URL.self) {
-            _ = provider.loadObject(ofClass: URL.self) { url, error in
+
+        // 1) Prefer real file URLs from Finder
+        if provider.hasItemConformingToTypeIdentifier(UTType.fileURL.identifier) {
+            provider.loadItem(forTypeIdentifier: UTType.fileURL.identifier, options: nil) { item, error in
                 DispatchQueue.main.async {
-                    if let url = url, url.isFileURL {
+                    if let url = (item as? URL) ?? (item as? NSURL as URL?) {
                         let secured = url.startAccessingSecurityScopedResource()
                         defer { if secured { url.stopAccessingSecurityScopedResource() } }
-                        
-                        handleDroppedURL(url: url)
+                        self.handleDroppedURL(url: url)
                     } else {
-                        handleDropFallback(provider: provider)
+                        // Fall back to other strategies
+                        self.handleDropFallback(provider: provider)
                     }
                 }
             }
-            
-            return true
-        } else {
-            handleDropFallback(provider: provider)
-            
             return true
         }
+
+        // 2) Otherwise try to load a file representation in place (keeps filename)
+        if provider.hasItemConformingToTypeIdentifier(UTType.png.identifier) {
+            provider.loadInPlaceFileRepresentation(forTypeIdentifier: UTType.png.identifier) { url, inPlace, error in
+                DispatchQueue.main.async {
+                    if let url = url {
+                        let secured = url.startAccessingSecurityScopedResource()
+                        defer { if secured { url.stopAccessingSecurityScopedResource() } }
+                        self.handleDroppedURL(url: url)
+                    } else {
+                        // Fall back to raw data + suggested name
+                        self.handleDropFallback(provider: provider)
+                    }
+                }
+            }
+            return true
+        }
+
+        // 3) Project files or anything else -> fallback handler
+        handleDropFallback(provider: provider)
+        return true
     }
     
     private func handleDropFallback(provider: NSItemProvider) {
         let projectUTI = uniqueProjectUTType
-        
+
+        // Project (.griddy)
         if provider.hasItemConformingToTypeIdentifier(projectUTI.identifier) {
             provider.loadDataRepresentation(forTypeIdentifier: projectUTI.identifier) { data, error in
                 DispatchQueue.main.async {
                     if let data = data {
-                        decodeAndLoadProject(data: data, url: nil)
+                        self.decodeAndLoadProject(data: data, url: nil)
                     } else {
-                        appState.presentAlert(
+                        self.appState.presentAlert(
                             title: "Drop Error",
                             message: "Could not load dropped project data: \(error?.localizedDescription ?? "unknown")"
                         )
                     }
                 }
             }
-        } else if provider.hasItemConformingToTypeIdentifier(UTType.png.identifier) {
+            return
+        }
+
+        // PNG bytes + suggestedName fallback
+        if provider.hasItemConformingToTypeIdentifier(UTType.png.identifier) {
             provider.loadDataRepresentation(forTypeIdentifier: UTType.png.identifier) { data, error in
                 DispatchQueue.main.async {
                     if let data = data, let image = NSImage(data: data) {
-                        loadImageAndCreateState(image: image, url: nil)
+                        var preferredName: String?
+                        if let s = provider.suggestedName, !s.isEmpty {
+                            preferredName = s.lowercased().hasSuffix(".png") ? s : (s + ".png")
+                        } else {
+                            preferredName = "Dropped Image.png"
+                        }
+                        self.loadImageAndCreateState(image: image,
+                                                     url: nil,
+                                                     originalPNGData: data,
+                                                     preferredFileName: preferredName)
                     } else {
-                        appState.presentAlert(
+                        self.appState.presentAlert(
                             title: "Drop Error",
                             message: "Could not load dropped PNG data: \(error?.localizedDescription ?? "unknown")"
                         )
                     }
                 }
             }
-        } else {
-            DispatchQueue.main.async {
-                appState.presentAlert(
-                    title: "Drop Error",
-                    message: "Unsupported item dropped."
-                )
-            }
+            return
+        }
+
+        // Unsupported
+        DispatchQueue.main.async {
+            self.appState.presentAlert(
+                title: "Drop Error",
+                message: "Unsupported item dropped."
+            )
         }
     }
     
@@ -295,41 +329,43 @@ struct ContentView: View {
     
     private func loadFile(url: URL) {
         guard let image = NSImage(contentsOf: url) else {
-            appState.presentAlert(
-                title: "Load Error",
-                message: "Could not load image: \(url.lastPathComponent)"
-            )
-            
+            appState.presentAlert(title: "Load Error", message: "Could not load image: \(url.lastPathComponent)")
             return
         }
-        
-        loadImageAndCreateState(image: image, url: url)
+        let originalData = try? Data(contentsOf: url)
+        loadImageAndCreateState(image: image, url: url, originalPNGData: originalData)
     }
     
-    private func loadImageAndCreateState(image: NSImage, url: URL?) {
-        let sourceName = url?.lastPathComponent ?? "Dropped Data"
-        
+    private func loadImageAndCreateState(image: NSImage,
+                                         url: URL?,
+                                         originalPNGData: Data? = nil,
+                                         preferredFileName: String? = nil) {
+        let sourceName = url?.lastPathComponent ?? (preferredFileName ?? "Dropped Data")
+
         if image.size.width.truncatingRemainder(dividingBy: GRID_CELL_SIZE) != 0 ||
            image.size.height.truncatingRemainder(dividingBy: GRID_CELL_SIZE) != 0 {
             appState.presentAlert(
                 title: "Invalid Dimensions",
                 message: "Image (\(Int(image.size.width))x\(Int(image.size.height))) not multiple of \(Int(GRID_CELL_SIZE))."
             )
-            
             return
         }
-        
+
         if let url = url, let existingFile = appState.openFiles.first(where: { $0.fileURL == url }) {
             selectedTabId = existingFile.id
-            
             return
         }
-        
+
         let newFileState = FileState(image: image, url: url)
-        
+        newFileState.originalPNGData = originalPNGData
+
+        // If there’s no URL, use the preferred file name for the tab title
+        if url == nil, let nice = preferredFileName, !nice.isEmpty {
+            newFileState.fileName = nice
+        }
+
         if newFileState.image != nil {
             appState.openFiles.append(newFileState)
-            
             selectedTabId = newFileState.id
         } else {
             appState.presentAlert(
@@ -429,7 +465,11 @@ struct ContentView: View {
             return
         }
         
-        let projectData = ProjectData(pngData: finalPNGData, gridData: currentFile.gridData, originalFileName: currentFile.fileName)
+        let projectData = ProjectData(
+            pngData: currentFile.originalPNGData ?? finalPNGData,  // prefer original bytes
+            gridData: currentFile.gridData,
+            originalFileName: currentFile.fileName
+        )
         
         do {
             let encoder = JSONEncoder()
@@ -675,7 +715,6 @@ struct ContentView: View {
         
         DispatchQueue.main.async {
             let panel = NSOpenPanel()
-            
             panel.allowsMultipleSelection = false
             panel.canChooseDirectories = false
             panel.canChooseFiles = true
@@ -999,6 +1038,81 @@ struct ContentView: View {
         }
     }
     
+    private func presentTMXSavePanel() {
+        guard let currentFile = getCurrentFileState(), let image = currentFile.image else {
+            appState.presentAlert(title: "No Image", message: "Load a PNG first.")
+            DispatchQueue.main.async { appState.showExportTMXPanel = false }
+            return
+        }
+        // Validate size
+        if image.size.width.truncatingRemainder(dividingBy: GRID_CELL_SIZE) != 0 ||
+           image.size.height.truncatingRemainder(dividingBy: GRID_CELL_SIZE) != 0 {
+            appState.presentAlert(title: "Invalid Dimensions",
+                                  message: "Image size must be a multiple of \(Int(GRID_CELL_SIZE)).")
+            DispatchQueue.main.async { appState.showExportTMXPanel = false }
+            return
+        }
+
+        DispatchQueue.main.async {
+            let openPanel = NSOpenPanel()
+            openPanel.title = "Choose Directory and Base Name for TMX/TSX/PNG"
+            openPanel.message = "Select output directory. Files written: <base>.tmx, <base>_tileset.tsx, <base>_tiles.png"
+            openPanel.prompt = "Choose Directory"
+            openPanel.canChooseFiles = false
+            openPanel.canChooseDirectories = true
+            openPanel.canCreateDirectories = true
+            openPanel.allowsMultipleSelection = false
+
+            // Simple accessory view for base name
+            let accessoryView = NSView(frame: NSRect(x: 0, y: 0, width: 260, height: 54))
+            let label = NSTextField(labelWithString: "Base Name:")
+            label.frame = NSRect(x: 0, y: 28, width: 80, height: 20)
+            let textField = NSTextField(frame: NSRect(x: 85, y: 26, width: 170, height: 22))
+            let defaultBase = (currentFile.fileURL?.deletingPathExtension().lastPathComponent
+                               ?? currentFile.fileName.replacingOccurrences(of: ".png", with: "")
+                                                 .replacingOccurrences(of: ".griddy", with: ""))
+            textField.stringValue = defaultBase
+            textField.placeholderString = "e.g., level_map"
+            accessoryView.addSubview(label)
+            accessoryView.addSubview(textField)
+            openPanel.accessoryView = accessoryView
+            openPanel.isAccessoryViewDisclosed = true
+
+            let result = openPanel.runModal()
+            self.appState.showExportTMXPanel = false
+            guard result == .OK, let directoryURL = openPanel.urls.first else { return }
+
+            let baseName = textField.stringValue.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !baseName.isEmpty else {
+                self.appState.presentAlert(title: "Export Failed", message: "Base name cannot be empty.")
+                return
+            }
+
+            // Security scope
+            let secured = directoryURL.startAccessingSecurityScopedResource()
+            defer { if secured { directoryURL.stopAccessingSecurityScopedResource() } }
+            guard secured else {
+                self.appState.presentAlert(title: "Permission Error", message: "No permission to write in the selected directory.")
+                return
+            }
+
+            do {
+                // Export with defaults: 8×8 tiles, external TSX
+                let result = try TiledExporter.exportTMX(from: currentFile,
+                                                         to: directoryURL,
+                                                         baseName: baseName,
+                                                         options: .init(tileSize: Int(GRID_CELL_SIZE)))
+
+                // Optional: update “Unique Tiles” in sidebar
+                currentFile.uniqueTileCount = result.uniqueTileCount
+                self.appState.presentAlert(title: "Export OK",
+                                           message: "Wrote:\n\(result.mapURL.lastPathComponent)\n\(result.tilesetURL.lastPathComponent)\n\(result.tilesetImageURL.lastPathComponent)")
+            } catch {
+                self.appState.presentAlert(title: "Export Failed", message: error.localizedDescription)
+            }
+        }
+    }
+
     private func closeTab(id: UUID) {
         guard let index = appState.openFiles.firstIndex(where: { $0.id == id }) else { return }
         

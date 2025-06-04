@@ -28,6 +28,7 @@ class FileState: ObservableObject, Identifiable, Equatable {
     @Published var gridRows: Int = 0
     @Published var hasUnsavedChanges: Bool = false
     @Published var uniqueTileCount: Int = 0
+    @Published var originalPNGData: Data? = nil
 
     // View-Specific State (Persistent Per File)
     @Published var zoomLevel: CGFloat = 1.0           // Stores the current zoom level for this file
@@ -80,6 +81,7 @@ class FileState: ObservableObject, Identifiable, Equatable {
     init(projectData: ProjectData, url: URL?) {
         // print("[FileState init(projectData:url:)] Initializing from project data. URL: \(url?.lastPathComponent ?? "nil")")
         // Validate image data from project
+        self.originalPNGData = projectData.pngData  // keep whatever was stored
         guard let pngData = projectData.pngData,
               let loadedImage = NSImage(data: pngData),
               loadedImage.isValid,
