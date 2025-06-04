@@ -177,7 +177,7 @@ struct CustomScrollIndicator: View {
     }
 }
 
-// MARK: - Extensions
+// MARK: - Extensions 2
 extension Comparable {
     func clamped(to limits: ClosedRange<Self>) -> Self {
         Swift.min(Swift.max(self, limits.lowerBound), limits.upperBound)
