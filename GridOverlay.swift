@@ -53,7 +53,9 @@ struct GridOverlay: View {
     // MARK: - Auto-Scroll State & Config
     @State private var autoScrollTimer: Timer? = nil
     @State private var autoScrollDirection: Set<Direction> = []
+    @State private var localDragLocation: CGPoint = .zero
     private let autoScrollMargin: CGFloat = 60.0
+    private let autoScrollAmount: CGFloat = 50.0
     private let autoScrollTimerInterval: TimeInterval = 0.02
     @State private var scrollSpeedX: CGFloat = 0
     @State private var scrollSpeedY: CGFloat = 0
@@ -215,6 +217,7 @@ struct GridOverlay: View {
                     }
                 }
                 .contentShape(Rectangle())
+                
                 .gesture(
                     DragGesture(minimumDistance: 0, coordinateSpace: .local)
                         .onChanged { value in
@@ -314,6 +317,7 @@ struct GridOverlay: View {
         var directions: Set<Direction> = []
         let maxScrollSpeed: CGFloat = 1500.0
         
+        // Reset speeds
         scrollSpeedX = 0
         scrollSpeedY = 0
         

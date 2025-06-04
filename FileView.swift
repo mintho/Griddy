@@ -93,7 +93,7 @@ struct FileView: View {
                 let globalFrameForOverlay = outerGeometry.frame(in: .global)
                 
                 ScrollViewReader { proxy in
-                    ScrollView([.horizontal, .vertical], showsIndicators: false) {
+                    let scrollViewContent = ScrollView([.horizontal, .vertical], showsIndicators: false) {
                         scrollableContentView(
                             visibleSize: localVisibleSize, // Pass current actual visible size
                             proxy: proxy,
@@ -221,6 +221,7 @@ struct FileView: View {
             
             self.adjustScrollOffsetAfterChange(newContentWidth: newContentWidth, newContentHeight: newContentHeight)
         }
+        .gesture(magnificationGesture)
     }
     
     @ViewBuilder
