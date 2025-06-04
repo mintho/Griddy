@@ -22,8 +22,6 @@ struct ScrollViewContentSizeKey: PreferenceKey {
     
     static func reduce(value: inout CGSize, nextValue: () -> CGSize) {
         let next = nextValue()
-        // Ensure we take the actual reported content size, not just max.
-        // This key is intended to report the single content's size.
         value = next
     }
 }
@@ -33,15 +31,14 @@ struct FileView: View {
     @ObservedObject var fileState: FileState
     @Environment(\.undoManager) var envUndoManager
 
-    @State private var contentSize: CGSize = .zero // Tracks the ZStack's size
-    @GestureState private var gestureMagnification: CGFloat = 1.0
+    @State private var contentSize: CGSize = .zero
+    @GestureState private var gestureMagnification: CGFloat = 1.0 // Tracks the gesture's current scale factor
     @State private var selectedColorIndex: Int = 1
     
-    @State private var currentVisibleSize: CGSize = .zero // ADDED: For viewport size
+    @State private var currentVisibleSize: CGSize = .zero
 
     private let minZoom: CGFloat = 0.2
     private let maxZoom: CGFloat = 5.0
-    // private let zoomSensitivity: CGFloat = 0.4 // Not currently used directly
     private let toolbarWidth: CGFloat = 180
     private let circleSize: CGFloat = 35
     private let scrollBarInteractiveThickness: CGFloat = 11.0
@@ -49,53 +46,28 @@ struct FileView: View {
     var magnificationGesture: some Gesture {
         MagnificationGesture()
             .onChanged { value in
-                // Directly apply zoom factor to the committed zoom level for smoother feel
-                // The 'value' is a multiplier from the start of the gesture.
-                // We need to manage the committed zoom level carefully.
-                // Let's assume gestureMagnification starts at 1.0 (from @GestureState)
-                // and fileState.zoomLevel is the "committed" zoom.
-                // This approach seems to accumulate too much.
-                // A better way for live gesture:
-                // Store zoom at gesture start, then newZoom = startZoom * value
-                // For now, let's stick to the previous simpler approach if it worked,
-                // and focus on offset clamping. The previous simpler gesture was:
-                let sensitivity: CGFloat = 0.1
-                let delta = value - 1.0 // value is total magnification since gesture start
-                let scaledDelta = delta * sensitivity
-                // This needs to be applied to the zoom level AT THE START of this specific onChanged event,
-                // or manage a temporary zoom factor.
-                // Simpler: if fileState.zoomLevel is updated, the .onChange will handle clamping.
-                // The key is that `value` in `onChanged` is relative to the start of the gesture.
-                // So, if we directly use it like `fileState.zoomLevel * value`, it will grow too fast
-                // if `fileState.zoomLevel` is also being updated by the gesture.
-                // Let's assume the original simple approach was intended:
-                // fileState.zoomLevel = (committedZoomLevelAtGestureStart * value).clamped(to: minZoom...maxZoom)
-                // Since we don't have committedZoomLevelAtGestureStart easily here without more state,
-                // the .onChange(of: fileState.zoomLevel) is our main defense.
-                // The previous simple logic for gesture:
-                let proposedZoomLevel = fileState.zoomLevel * (1.0 + (value - gestureMagnification) * 0.5) // Incremental change
+                let sensitivityFactor = 0.05 // Make this smaller for less sensitivity
+                let incrementalMagnificationChange = value - gestureMagnification
+                
+                // Apply the sensitive incremental change to the current zoom level
+                let proposedZoomLevel = fileState.zoomLevel * (1.0 + incrementalMagnificationChange * sensitivityFactor)
+                
                 fileState.zoomLevel = proposedZoomLevel.clamped(to: minZoom...maxZoom)
-                // gestureMagnification is reset by @GestureState, so this makes sense.
             }
             .onEnded { value in
-                // Final adjustment if needed, .onChange will also fire
-                // fileState.zoomLevel = (fileState.zoomLevel * value).clamped(to: minZoom...maxZoom); // This was likely wrong before
-                // The onEnded value is the final magnification of the gesture.
-                // If onChanged updated it incrementally, onEnded might just confirm or do nothing new.
-                // The important part is that fileState.zoomLevel is now set.
             }
     }
     
     var body: some View {
         HSplitView {
             GeometryReader { outerGeometry in
-                let localVisibleSize = outerGeometry.size // Use this for direct passing
+                let localVisibleSize = outerGeometry.size
                 let globalFrameForOverlay = outerGeometry.frame(in: .global)
                 
                 ScrollViewReader { proxy in
                     ScrollView([.horizontal, .vertical], showsIndicators: false) {
                         scrollableContentView(
-                            visibleSize: localVisibleSize, // Pass current actual visible size
+                            visibleSize: localVisibleSize,
                             proxy: proxy,
                             globalFrame: globalFrameForOverlay
                         )
@@ -111,11 +83,11 @@ struct FileView: View {
                     .onScrollGeometryChange(for: CGSize.self, of: { $0.contentSize }) { oldValue, newValue in
                         let newSize = newValue
                         if newSize.width > 0 && newSize.height > 0 && self.contentSize != newSize {
-                            self.contentSize = newSize // This is the ZStack's size
+                            self.contentSize = newSize
                         }
                     }
                     .overlay(
-                        Group { // Vertical Scrollbar
+                        Group {
                             if contentSize.height > localVisibleSize.height {
                                 HStack {
                                     Spacer()
@@ -125,18 +97,18 @@ struct FileView: View {
                                         scrollableContentID: "scrollableContent",
                                         currentOffset: $fileState.scrollOffset.y,
                                         otherAxisOffset: fileState.scrollOffset.x,
-                                        contentSize: self.contentSize, // Use the state var for ZStack size
-                                        visibleSize: localVisibleSize  // Use current viewport size
+                                        contentSize: self.contentSize,
+                                        visibleSize: localVisibleSize
                                     )
                                     .frame(width: scrollBarInteractiveThickness)
                                 }
-                                .padding(.bottom, (contentSize.width > localVisibleSize.width) ? scrollBarInteractiveThickness : 0) // Avoid overlap
+                                .padding(.bottom, (contentSize.width > localVisibleSize.width) ? scrollBarInteractiveThickness : 0)
                                 .frame(maxHeight: .infinity, alignment: .trailing)
                             }
                         }
                     )
                     .overlay(
-                        Group { // Horizontal Scrollbar
+                        Group {
                             if contentSize.width > localVisibleSize.width {
                                 VStack {
                                     Spacer()
@@ -146,12 +118,12 @@ struct FileView: View {
                                         scrollableContentID: "scrollableContent",
                                         currentOffset: $fileState.scrollOffset.x,
                                         otherAxisOffset: fileState.scrollOffset.y,
-                                        contentSize: self.contentSize, // Use the state var for ZStack size
-                                        visibleSize: localVisibleSize  // Use current viewport size
+                                        contentSize: self.contentSize,
+                                        visibleSize: localVisibleSize
                                     )
                                     .frame(height: scrollBarInteractiveThickness)
                                 }
-                                .padding(.trailing, (contentSize.height > localVisibleSize.height) ? scrollBarInteractiveThickness : 0) // Avoid overlap
+                                .padding(.trailing, (contentSize.height > localVisibleSize.height) ? scrollBarInteractiveThickness : 0)
                                 .frame(maxWidth: .infinity, alignment: .bottom)
                             }
                         }
@@ -161,33 +133,30 @@ struct FileView: View {
                             let margin: CGFloat = 100
                             let initialOffsetX = margin
                             let initialOffsetY = margin
-                            // Ensure offset is valid for initial content and view size
-                            // This will be handled by adjustScrollOffsetAfterChange called from outer .onAppear
                             fileState.scrollOffset = CGPoint(x: initialOffsetX, y: initialOffsetY)
                             fileState.isNewlyOpened = false
                         }
-                        // else {
-                        // This part was problematic and could lead to recursive updates or race conditions.
-                        // Rely on scrollOffset binding and .onChange for adjustments.
-                        // let targetAnchor = calculateAnchor(from: fileState.scrollOffset, visibleSize: localVisibleSize)
-                        // proxy.scrollTo("scrollableContent", anchor: targetAnchor)
-                        // }
                     }
                 }
-                .onAppear { // For the GeometryReader itself
+                .onAppear {
                     self.currentVisibleSize = localVisibleSize
-                    DispatchQueue.main.async { // Allow contentSize preference to be updated
+                    DispatchQueue.main.async {
+                        let currentContentWidth: CGFloat
+                        let currentContentHeight: CGFloat
+
                         if self.contentSize.width > 0 && self.contentSize.height > 0 {
-                             self.adjustScrollOffsetAfterChange(newContentWidth: self.contentSize.width,
-                                                               newContentHeight: self.contentSize.height)
-                        } else if let image = fileState.image { // Fallback if contentSize not set yet
+                             currentContentWidth = self.contentSize.width
+                             currentContentHeight = self.contentSize.height
+                        } else if let image = fileState.image {
                             let margin: CGFloat = 100
-                            let initialContentWidth = image.size.width * fileState.zoomLevel + 2 * margin
-                            let initialContentHeight = image.size.height * fileState.zoomLevel + 2 * margin
-                            if initialContentWidth > 0 && initialContentHeight > 0 {
-                                self.adjustScrollOffsetAfterChange(newContentWidth: initialContentWidth,
-                                                                   newContentHeight: initialContentHeight)
-                            }
+                            currentContentWidth = image.size.width * fileState.zoomLevel + 2 * margin
+                            currentContentHeight = image.size.height * fileState.zoomLevel + 2 * margin
+                        } else {
+                            return
+                        }
+                        if currentContentWidth > 0 && currentContentHeight > 0 {
+                            self.adjustScrollOffsetAfterChange(newContentWidth: currentContentWidth,
+                                                               newContentHeight: currentContentHeight)
                         }
                     }
                 }
@@ -206,9 +175,8 @@ struct FileView: View {
                 .padding()
                 .frame(width: toolbarWidth)
         }
-        .gesture(magnificationGesture)
+        .gesture(magnificationGesture) // Apply gesture to HSplitView
         .onChange(of: fileState.zoomLevel) {
-            // This is the primary handler for zoom changes from any source (buttons, gesture)
             guard let image = fileState.image, self.currentVisibleSize.width > 0, self.currentVisibleSize.height > 0 else {
                 return
             }
@@ -226,21 +194,16 @@ struct FileView: View {
     @ViewBuilder
     private func scrollableContentView(visibleSize: CGSize, proxy: ScrollViewProxy, globalFrame: CGRect) -> some View {
         let scrollableContentID = "scrollableContent"
-        // Use fileState.imageWidth/Height which are set on init, not direct image?.size
         if fileState.image != nil, fileState.imageWidth > 0, fileState.imageHeight > 0 {
             let scaledWidth = fileState.imageWidth * fileState.zoomLevel
             let scaledHeight = fileState.imageHeight * fileState.zoomLevel
             let margin: CGFloat = 100
             
-            ZStack { // This ZStack's frame becomes self.contentSize via preference key
-                Image(nsImage: fileState.image!) // Safe to unwrap due to guard above
+            ZStack {
+                Image(nsImage: fileState.image!)
                     .resizable()
                     .interpolation(.none)
                     .frame(width: scaledWidth, height: scaledHeight)
-                    // Position GridOverlay and Image at the same logical place if margin is for ZStack
-                    // The ZStack is (image + 2*margin). Image is at its center.
-                    // GridOverlay should map to the image part.
-                    .position(x: scaledWidth / 2, y: scaledHeight / 2) // Position image at top-left of its own frame
 
                 GridOverlay(
                     gridData: $fileState.gridData,
@@ -251,25 +214,19 @@ struct FileView: View {
                     selectedColorIndex: selectedColorIndex,
                     scrollProxy: proxy,
                     scrollableContentID: scrollableContentID,
-                    externalContentOffset: $fileState.scrollOffset, // This is offset of ZStack
-                    visibleSize: visibleSize,                       // Viewport size
-                    contentSize: self.contentSize,                  // ZStack size (image + 2*margin)
+                    externalContentOffset: $fileState.scrollOffset,
+                    visibleSize: visibleSize,
+                    contentSize: self.contentSize,
                     scrollViewGlobalFrame: globalFrame,
-                    contentViewInset: margin                        // The margin for GridOverlay's own content
+                    contentViewInset: margin
                 )
-                .frame(width: scaledWidth, height: scaledHeight) // GridOverlay matches image size
-                // .position(x: scaledWidth / 2, y: scaledHeight / 2) // Positioned by ZStack implicitly
+                .frame(width: scaledWidth, height: scaledHeight)
             }
-            // The ZStack has the margin applied. Its origin is (0,0) in its own space.
-            // Its content (Image, GridOverlay) is positioned from its (0,0).
-            // So scrollOffset is (margin, margin) for initial view.
-            // GridOverlay needs to know that fileState.scrollOffset.x = margin means its visual left edge is at viewport left.
-            .padding(margin) // Apply padding to the ZStack to create the margin
-            .frame(width: scaledWidth + 2 * margin, height: scaledHeight + 2 * margin) // Explicit frame for preference key
+            .padding(margin)
+            .frame(width: scaledWidth + 2 * margin, height: scaledHeight + 2 * margin)
             .id(scrollableContentID)
             .contentShape(Rectangle())
-            // .simultaneousGesture(magnificationGesture) // Already on HSplitView
-            .background( // For ScrollViewOffsetKey (offset of this ZStack inside ScrollView)
+            .background(
                 GeometryReader { contentGeo in
                     Color.clear
                         .preference(
@@ -278,7 +235,7 @@ struct FileView: View {
                         )
                 }
             )
-            .background( // For ScrollViewContentSizeKey (size of this ZStack)
+            .background(
                 GeometryReader { contentGeo in
                     Color.clear
                         .preference(
@@ -300,7 +257,7 @@ struct FileView: View {
         var clampedX = fileState.scrollOffset.x
         var clampedY = fileState.scrollOffset.y
 
-        if newContentWidth <= 0 || newContentHeight <= 0 { // Invalid new content size
+        if newContentWidth <= 0 || newContentHeight <= 0 {
             clampedX = 0
             clampedY = 0
         } else {
@@ -308,13 +265,13 @@ struct FileView: View {
             let maxOffsetY = max(0, newContentHeight - self.currentVisibleSize.height)
 
             if newContentWidth <= self.currentVisibleSize.width {
-                clampedX = 0 // Center if smaller, or stick to 0
+                clampedX = 0
             } else {
                 clampedX = clampedX.clamped(to: 0...maxOffsetX)
             }
 
             if newContentHeight <= self.currentVisibleSize.height {
-                clampedY = 0 // Center if smaller, or stick to 0
+                clampedY = 0
             } else {
                 clampedY = clampedY.clamped(to: 0...maxOffsetY)
             }
@@ -327,10 +284,8 @@ struct FileView: View {
         }
     }
     
-    // MARK: - Toolbar View Builder
     @ViewBuilder
     private func createToolbar() -> some View {
-        // ... (toolbar code remains the same)
         GeometryReader { geometry in
             let availableHeight = geometry.size.height
             let zoomControlsHeight: CGFloat = 30
@@ -407,7 +362,6 @@ struct FileView: View {
     
     @ViewBuilder
     private func colorCircleView(for index: Int) -> some View {
-        // ... (colorCircleView code remains the same)
         ZStack {
             Circle()
                 .fill(ColorPalette.displayColor(for: index))
@@ -436,7 +390,6 @@ struct FileView: View {
     }
     
     private func isLightColor(_ index: Int) -> Bool {
-        // ... (isLightColor code remains the same)
         return [4, 7, 9].contains(index) || index == 0
     }
     
@@ -449,7 +402,6 @@ struct FileView: View {
     }
     
     private func handlePaintAction(cellsToPaint: Set<GridCell>, colorIndex: Int) {
-        // ... (handlePaintAction code remains the same)
         guard let undoMgr = envUndoManager else {
             applyGridChanges(cells: cellsToPaint, newColor: colorIndex)
             return
@@ -457,7 +409,10 @@ struct FileView: View {
         
         let previousValues = Dictionary(uniqueKeysWithValues: cellsToPaint.compactMap { c -> (GridCell, Int)? in
             guard c.isValid(rows: fileState.gridRows, cols: fileState.gridColumns) else { return nil }
-            return (c, fileState.gridData[c.row][c.col])
+            if fileState.gridData.indices.contains(c.row) && fileState.gridData[c.row].indices.contains(c.col) {
+                 return (c, fileState.gridData[c.row][c.col])
+            }
+            return nil
         })
         
         applyGridChanges(cells: cellsToPaint, newColor: colorIndex)
@@ -474,30 +429,29 @@ struct FileView: View {
     }
     
     private func applyGridChanges(target: FileState? = nil, cells: Set<GridCell>, newColor: Int) {
-        // ... (applyGridChanges code remains the same)
         let s = target ?? self.fileState
         for c in cells {
             if c.isValid(rows: s.gridRows, cols: s.gridColumns) {
-                s.gridData[c.row][c.col] = newColor
+                 if s.gridData.indices.contains(c.row) && s.gridData[c.row].indices.contains(c.col) {
+                    s.gridData[c.row][c.col] = newColor
+                }
             }
         }
     }
     
     private func applyGridChanges(target: FileState? = nil, changes: [GridCell: Int]) {
-        // ... (applyGridChanges code remains the same)
         let s = target ?? self.fileState
         for (c, v) in changes {
             if c.isValid(rows: s.gridRows, cols: s.gridColumns) {
-                s.gridData[c.row][c.col] = v
+                if s.gridData.indices.contains(c.row) && s.gridData[c.row].indices.contains(c.col) {
+                    s.gridData[c.row][c.col] = v
+                }
             }
         }
     }
-    
-    // Removed calculateAnchor as it's not used directly for now.
-    // If needed for programmatic scroll-to-center, it can be re-added.
 }
 
-// Add clamped extension for CGFloat if not already globally available
+// CGFloat.clamped extension should be available
 extension CGFloat {
     func clamped(to limits: ClosedRange<CGFloat>) -> CGFloat {
         return Swift.min(Swift.max(self, limits.lowerBound), limits.upperBound)

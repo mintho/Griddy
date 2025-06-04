@@ -13,17 +13,14 @@ struct CustomScrollIndicator: View {
     let scrollProxy: ScrollViewProxy
     let scrollableContentID: String
     
-    // Input Bindings/Values
-    @Binding var currentOffset: CGFloat // Offset for THIS axis (this is fileState.scrollOffset.x or .y)
-    let otherAxisOffset: CGFloat        // Offset for the OTHER axis
-    let contentSize: CGSize             // Full content size (of the ZStack in FileView: image + 2*margin)
-    let visibleSize: CGSize             // Full visible size (ScrollView viewport size)
+    @Binding var currentOffset: CGFloat
+    let otherAxisOffset: CGFloat
+    let contentSize: CGSize
+    let visibleSize: CGSize
     
-    // Configuration
     let cornerRadius: CGFloat = 5.0
     let inactiveColor = Color(white: 0.9)
     
-    // Styling & Interaction State/Constants
     @State private var isHovering: Bool = false
     private let defaultThickness: CGFloat = 5.0
     private let hoveredThickness: CGFloat = 11.0
@@ -35,8 +32,6 @@ struct CustomScrollIndicator: View {
     
     // MARK: - Computed Properties (Axis-Aware)
     private var contentLength: CGFloat {
-        // contentSize already includes the margins from FileView's ZStack.
-        // So, the contentLength for the scrollbar is simply the dimension of contentSize.
         return axis == .vertical ? contentSize.height : contentSize.width
     }
     private var visibleLength: CGFloat {
@@ -46,8 +41,6 @@ struct CustomScrollIndicator: View {
     private var trackLength: CGFloat { visibleLength }
     
     private var isActive: Bool {
-        // Ensure there's actually something to scroll (content is larger than viewport)
-        // Add a small tolerance to avoid scrollbars for minuscule overflows.
         let tolerance: CGFloat = 1.0
         return contentLength > visibleLength + tolerance
     }
@@ -59,7 +52,7 @@ struct CustomScrollIndicator: View {
     
     private var thumbLength: CGFloat {
         guard isActive, contentLength > 0 else { return 0 }
-        let trackRatio = visibleLength / contentLength // Ratio of visible area to total content
+        let trackRatio = visibleLength / contentLength
         let proportionalLength = trackLength * trackRatio
         return min(trackLength, max(minThumbSize, proportionalLength))
     }
@@ -70,10 +63,9 @@ struct CustomScrollIndicator: View {
         calculateThumbOffset(for: currentOffset)
     }
     
-    // MARK: - Body
     var body: some View {
         if isActive {
-            Color.clear // Track itself is invisible
+            Color.clear
                 .overlay(
                     RoundedRectangle(cornerRadius: cornerRadius)
                         .fill(inactiveColor.opacity(currentThumbOpacity))
@@ -81,7 +73,7 @@ struct CustomScrollIndicator: View {
                             width: axis == .horizontal ? thumbLength : currentVisualThickness,
                             height: axis == .vertical ? thumbLength : currentVisualThickness
                         )
-                        .contentShape(Rectangle()) // Make sure the thumb itself is tappable
+                        .contentShape(Rectangle())
                         .offset(
                             x: axis == .horizontal ? thumbOffset : 0,
                             y: axis == .vertical ? thumbOffset : 0
@@ -92,68 +84,50 @@ struct CustomScrollIndicator: View {
                                 isHovering = hovering
                             }
                         },
-                    alignment: axis == .vertical ? .topLeading : .topLeading // Ensure consistent alignment
+                    alignment: axis == .vertical ? .topLeading : .topLeading
                 )
-                .frame( // This frame is for the invisible track / hit area
+                .frame(
                     width: axis == .horizontal ? trackLength : interactiveThickness,
                     height: axis == .vertical ? trackLength : interactiveThickness
                 )
-                .clipped() // Important if thumb could go outside for some reason
+                .clipped()
         } else {
             EmptyView()
         }
     }
     
-    // MARK: - Drag Gesture
     var dragGesture: some Gesture {
         DragGesture(minimumDistance: 0)
             .onChanged { value in
                 if dragStartOffset == nil {
-                    // Record the content's scroll offset when the drag begins
                     dragStartOffset = currentOffset
                 }
                 
-                // Calculate initial thumb position based on where content was when drag started
                 let initialThumbPhysicalOffset = calculateThumbOffset(for: dragStartOffset ?? currentOffset)
                 let thumbDragDelta = axis == .vertical ? value.translation.height : value.translation.width
                 
-                // New desired physical position of the thumb on the track
                 let targetThumbPhysicalPos = initialThumbPhysicalOffset + thumbDragDelta
                 let clampedThumbPhysicalPos = targetThumbPhysicalPos.clamped(to: 0...maxThumbOffset)
                 
-                guard maxThumbOffset > 0 else { return } // Avoid division by zero if no scroll range for thumb
+                guard maxThumbOffset > 0 else { return }
                 
-                // Convert the new thumb physical position back to a content offset
                 let targetContentOffsetThisAxis = (clampedThumbPhysicalPos / maxThumbOffset) * maxScrollOffset
-                // Ensure the calculated content offset is within the valid scroll range
                 let finalTargetContentOffsetThisAxis = targetContentOffsetThisAxis.clamped(to: 0...maxScrollOffset)
                 
-                let tolerance: CGFloat = 0.1 // To prevent jitter or excessive updates
+                let tolerance: CGFloat = 0.1
                 if abs(currentOffset - finalTargetContentOffsetThisAxis) > tolerance {
-                    currentOffset = finalTargetContentOffsetThisAxis // Update the bound fileState.scrollOffset
+                    currentOffset = finalTargetContentOffsetThisAxis
                     
-                    // Prepare the CGPoint for ScrollViewProxy.scrollTo
-                    // This point represents the desired top-left corner of the visible content.
-                    let targetScrollToPoint = CGPoint(
-                        x: axis == .horizontal ? finalTargetContentOffsetThisAxis : otherAxisOffset,
-                        y: axis == .vertical ? finalTargetContentOffsetThisAxis : otherAxisOffset
-                    )
+                    // REMOVED targetScrollToPoint as it was unused.
                     
-                    // Calculate anchor for scrollTo. The anchor is a UnitPoint representing
-                    // the fractional position within the scrollable range.
-                    let scrollableRangeX = contentLength - visibleLength // This is maxScrollOffset for X
-                    let scrollableRangeY = contentLength - visibleLength // This is maxScrollOffset for Y (if vertical)
+                    let scrollableRangeX = contentSize.width - visibleSize.width // Using contentSize directly for clarity here
+                    let scrollableRangeY = contentSize.height - visibleSize.height// Using contentSize directly for clarity here
 
-                    // Use the correct scrollable range for the current axis
-                    let currentAxisScrollableRange = axis == .vertical ? scrollableRangeY : scrollableRangeX
+                    // REMOVED currentAxisScrollableRange as it was unused.
 
-                    // If we are scrolling horizontally, anchor.x uses finalTargetContentOffsetThisAxis
-                    // and anchor.y uses otherAxisOffset / scrollableRangeY.
-                    // And vice-versa for vertical scrolling.
+                    let anchorX = (scrollableRangeX > 0) ? ( (axis == .horizontal ? finalTargetContentOffsetThisAxis : otherAxisOffset) / scrollableRangeX ).clamped(to: 0...1) : 0.5 // Adjusted to 0.5 for non-scrollable
+                    let anchorY = (scrollableRangeY > 0) ? ( (axis == .vertical ? finalTargetContentOffsetThisAxis : otherAxisOffset) / scrollableRangeY ).clamped(to: 0...1) : 0.5 // Adjusted to 0.5 for non-scrollable
                     
-                    let anchorX = (scrollableRangeX > 0) ? ( (axis == .horizontal ? finalTargetContentOffsetThisAxis : otherAxisOffset) / scrollableRangeX ).clamped(to: 0...1) : 0
-                    let anchorY = (scrollableRangeY > 0) ? ( (axis == .vertical ? finalTargetContentOffsetThisAxis : otherAxisOffset) / scrollableRangeY ).clamped(to: 0...1) : 0
-
                     let anchor = UnitPoint(x: anchorX, y: anchorY)
                     
                     scrollProxy.scrollTo(scrollableContentID, anchor: anchor)
@@ -167,17 +141,15 @@ struct CustomScrollIndicator: View {
             }
     }
     
-    // MARK: - Helper Functions
     private func calculateThumbOffset(for contentOffset: CGFloat) -> CGFloat {
         guard isActive, maxScrollOffset > 0 else { return 0 }
-        // Ensure contentOffset doesn't exceed maxScrollOffset for calculation
         let clampedContentOffset = contentOffset.clamped(to: 0...maxScrollOffset)
         let scrollRatio = clampedContentOffset / maxScrollOffset
         return (maxThumbOffset * scrollRatio).clamped(to: 0...maxThumbOffset)
     }
 }
 
-// MARK: - Extensions 2
+// MARK: - Extensions
 extension Comparable {
     func clamped(to limits: ClosedRange<Self>) -> Self {
         Swift.min(Swift.max(self, limits.lowerBound), limits.upperBound)

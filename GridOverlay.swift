@@ -36,20 +36,22 @@ struct GridOverlay: View {
     var onPaint: (_ cells: Set<GridCell>, _ colorIndex: Int) -> Void
     let selectedColorIndex: Int
     
-    // Context from FileView
     let scrollProxy: ScrollViewProxy
     let scrollableContentID: String
     @Binding var externalContentOffset: CGPoint
     let visibleSize: CGSize
-    let contentSize: CGSize // This is the ZStack's size from FileView
+    let contentSize: CGSize
     let scrollViewGlobalFrame: CGRect
-    let contentViewInset: CGFloat // Margin inside the ZStack, around GridOverlay
+    let contentViewInset: CGFloat
 
     // MARK: - Drag State
     @State private var isDragging: Bool = false
     @State private var dragStartCell: GridCell? = nil
     @State private var dragCurrentCell: GridCell? = nil
     
+    // Store the mouse location in GridOverlay's local space from DragGesture
+    @State private var currentDragGestureLocalLocation: CGPoint? = nil
+
     // MARK: - Auto-Scroll State & Config
     @State private var autoScrollTimer: Timer? = nil
     @State private var autoScrollDirection: Set<Direction> = []
@@ -57,9 +59,6 @@ struct GridOverlay: View {
     private let autoScrollTimerInterval: TimeInterval = 0.02
     @State private var scrollSpeedX: CGFloat = 0
     @State private var scrollSpeedY: CGFloat = 0
-    
-    @State private var initialLocalDragLocationForScrollHandling: CGPoint? = nil
-    @State private var initialContentOffsetForScrollHandling: CGPoint? = nil
     
     // MARK: - Computed Properties
     private var cellsInDragRectangle: Set<GridCell> {
@@ -91,14 +90,14 @@ struct GridOverlay: View {
     var body: some View {
         if isValidGrid {
             GeometryReader { geometry in
-                let localSize = geometry.size // Size of GridOverlay itself (scaled image size)
+                let localSize = geometry.size
                 let scaledCellWidth = GRID_CELL_SIZE_CONST * zoomLevel
                 let scaledCellHeight = GRID_CELL_SIZE_CONST * zoomLevel
-                
                 let showGridLines = (scaledCellWidth > 3.0 || scaledCellHeight > 3.0) && zoomLevel > 0.1
 
                 ZStack(alignment: .topLeading) {
                     Canvas { context, size in
+                        // ... (Canvas drawing logic remains the same as the last working version)
                         guard scaledCellWidth > 0, scaledCellHeight > 0 else { return }
 
                         let viewportOriginInGridOverlayX = externalContentOffset.x - contentViewInset
@@ -160,15 +159,12 @@ struct GridOverlay: View {
                             let lineDrawingMinY = CGFloat(startRowCells) * scaledCellHeight
                             let lineDrawingMaxY = CGFloat(endRowCellsExclusive) * scaledCellHeight
                             
-                            // Iterate for vertical lines (from col 0 to gridColumns)
-                            // but only draw if they are within the visible cell drawing area.
                             let firstLineColToDraw = startColCells
-                            let lastLineColToDraw = endColCellsExclusive // Draw line at the right of the last visible column of cells
+                            let lastLineColToDraw = endColCellsExclusive
 
                             if firstLineColToDraw <= lastLineColToDraw {
                                 for col_idx in firstLineColToDraw...lastLineColToDraw {
                                     let x = CGFloat(col_idx) * scaledCellWidth
-                                    // Ensure the line itself is within the broader visible area to avoid unnecessary drawing
                                     if x >= visibleRectInGridOverlayCoords.minX - scaledCellWidth && x <= visibleRectInGridOverlayCoords.maxX + scaledCellWidth {
                                         context.stroke(Path { path in
                                             path.move(to: CGPoint(x: x, y: lineDrawingMinY))
@@ -178,9 +174,8 @@ struct GridOverlay: View {
                                 }
                             }
                             
-                            // Iterate for horizontal lines (from row 0 to gridRows)
                             let firstLineRowToDraw = startRowCells
-                            let lastLineRowToDraw = endRowCellsExclusive // Draw line at the bottom of the last visible row of cells
+                            let lastLineRowToDraw = endRowCellsExclusive
 
                             if firstLineRowToDraw <= lastLineRowToDraw {
                                 for row_idx in firstLineRowToDraw...lastLineRowToDraw {
@@ -219,19 +214,23 @@ struct GridOverlay: View {
                     DragGesture(minimumDistance: 0, coordinateSpace: .local)
                         .onChanged { value in
                             let localLocation = value.location
-                            let currentCell = mapPointToCell(localPoint: localLocation)
+                            self.currentDragGestureLocalLocation = localLocation // Store current gesture location
+
+                            let currentCellUnderMouse = mapPointToCell(localPoint: localLocation)
                             
                             if !isDragging {
                                 isDragging = true
-                                dragStartCell = currentCell
-                                initialLocalDragLocationForScrollHandling = localLocation
-                                initialContentOffsetForScrollHandling = externalContentOffset
+                                dragStartCell = currentCellUnderMouse
+                                dragCurrentCell = currentCellUnderMouse // Initial cell
+                            } else {
+                                if autoScrollTimer == nil {
+                                     if currentCellUnderMouse != dragCurrentCell {
+                                        dragCurrentCell = currentCellUnderMouse
+                                    }
+                                }
                             }
                             
-                            if currentCell != dragCurrentCell {
-                                dragCurrentCell = currentCell
-                            }
-                            
+                            // Determine scroll direction based on mouse position relative to viewport
                             let mouseLocationInViewport = CGPoint(
                                 x: (localLocation.x + contentViewInset) - externalContentOffset.x,
                                 y: (localLocation.y + contentViewInset) - externalContentOffset.y
@@ -240,20 +239,22 @@ struct GridOverlay: View {
                             manageAutoScrollTimer()
                         }
                         .onEnded { value in
-                            let localLocation = value.location
-                            let endCell = mapPointToCell(localPoint: localLocation)
-                            dragCurrentCell = endCell
+                            currentDragGestureLocalLocation = nil // Reset
+                            
+                            // Finalize dragCurrentCell based on the actual last mouse position
+                            let finalCellUnderMouse = mapPointToCell(localPoint: value.location)
+                            dragCurrentCell = finalCellUnderMouse
                             
                             let dragDistance = hypot(value.translation.width, value.translation.height)
                             let dragThreshold: CGFloat = 5.0
                             var cellsToPaint = Set<GridCell>()
                             
-                            if !isDragging || (dragDistance < dragThreshold && dragStartCell == endCell) {
-                                if let cell = endCell, cell.isValid(rows: gridRows, cols: gridColumns) {
+                            if !isDragging || (dragDistance < dragThreshold && dragStartCell == finalCellUnderMouse) {
+                                if let cell = finalCellUnderMouse, cell.isValid(rows: gridRows, cols: gridColumns) {
                                     cellsToPaint.insert(cell)
                                 }
                             } else {
-                                cellsToPaint = self.cellsInDragRectangle
+                                cellsToPaint = self.cellsInDragRectangle // Uses dragStartCell and the finalized dragCurrentCell
                             }
                             
                             if !cellsToPaint.isEmpty {
@@ -264,22 +265,19 @@ struct GridOverlay: View {
                 )
                 .onChange(of: externalContentOffset) { oldOffset, newOffset in
                     if isDragging {
-                        if let initialLocalDrag = initialLocalDragLocationForScrollHandling,
-                           let initialContentOffset = initialContentOffsetForScrollHandling {
-                            
-                            let contentScrollDelta = CGPoint(x: newOffset.x - initialContentOffset.x,
-                                                             y: newOffset.y - initialContentOffset.y)
-                            
-                            let currentEffectiveLocalLocation = CGPoint(
-                                x: initialLocalDrag.x - contentScrollDelta.x,
-                                y: initialLocalDrag.y - contentScrollDelta.y
-                            )
-                            
-                            let currentCell = mapPointToCell(localPoint: currentEffectiveLocalLocation)
-                            
-                            if let cell = currentCell, cell != dragCurrentCell {
-                                dragCurrentCell = cell
-                            }
+                        guard let lastKnownMouseLocal = currentDragGestureLocalLocation else {
+                            return
+                        }
+                        
+                        let scrollDeltaView = CGPoint(x: newOffset.x - oldOffset.x, y: newOffset.y - oldOffset.y)
+                        
+                        // If the view scrolled left (deltaX < 0), the mouse's local X (if screen-stationary) would increase.
+                        let effectiveMouseLocalX = lastKnownMouseLocal.x - scrollDeltaView.x
+                        let effectiveMouseLocalY = lastKnownMouseLocal.y - scrollDeltaView.y
+                        let effectiveCell = mapPointToCell(localPoint: CGPoint(x: effectiveMouseLocalX, y: effectiveMouseLocalY))
+
+                        if let cell = effectiveCell, cell != dragCurrentCell {
+                            dragCurrentCell = cell
                         }
                     }
                 }
@@ -345,7 +343,7 @@ struct GridOverlay: View {
             autoScrollTimer = Timer.scheduledTimer(withTimeInterval: autoScrollTimerInterval, repeats: true) { timer in
                 DispatchQueue.main.async {
                     if self.isDragging && !self.autoScrollDirection.isEmpty {
-                        self.performAutoScroll()
+                        self.performAutoScroll() // This will trigger .onChange(of: externalContentOffset)
                     } else {
                         timer.invalidate()
                         self.autoScrollTimer = nil
@@ -390,8 +388,7 @@ struct GridOverlay: View {
         isDragging = false
         dragStartCell = nil
         dragCurrentCell = nil
-        initialLocalDragLocationForScrollHandling = nil
-        initialContentOffsetForScrollHandling = nil
+        currentDragGestureLocalLocation = nil // Reset
         
         if autoScrollTimer != nil {
             autoScrollTimer?.invalidate()

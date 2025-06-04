@@ -59,8 +59,8 @@
 		F4472EEB2DB9CB290056F8AB /* todo.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = todo.txt; sourceTree = "<group>"; };
 		F4472F0C2DC02BD30056F8AB /* CustomScrollIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomScrollIndicator.swift; sourceTree = "<group>"; };
 		F49BCCEF2DB05CE400965F40 /* Griddy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Griddy.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		F49BCCFD2DB05CE500965F40 /* GriddyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = GriddyTests.xctest; path = "/Users/minzenmay/Coding/Grid Image Editor/Grid Image Editor/build/Debug/Griddy.app/Contents/PlugIns/GriddyTests.xctest"; sourceTree = "<absolute>"; };
-		F49BCD072DB05CE500965F40 /* GriddyUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; name = GriddyUITests.xctest; path = "/Users/minzenmay/Coding/Grid Image Editor/Grid Image Editor/build/Debug/GriddyUITests-Runner.app/Contents/PlugIns/GriddyUITests.xctest"; sourceTree = "<absolute>"; };
+		F4CDB9202DEFC5E100FD5184 /* GriddyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GriddyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F4CDB9212DEFC5E100FD5184 /* GriddyUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GriddyUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -124,6 +124,8 @@
 			isa = PBXGroup;
 			children = (
 				F49BCCEF2DB05CE400965F40 /* Griddy.app */,
+				F4CDB9202DEFC5E100FD5184 /* GriddyTests.xctest */,
+				F4CDB9212DEFC5E100FD5184 /* GriddyUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -170,7 +172,7 @@
 			packageProductDependencies = (
 			);
 			productName = "Grid Image EditorTests";
-			productReference = F49BCCFD2DB05CE500965F40 /* GriddyTests.xctest */;
+			productReference = F4CDB9202DEFC5E100FD5184 /* GriddyTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
 		F49BCD062DB05CE500965F40 /* GriddyUITests */ = {
@@ -190,7 +192,7 @@
 			packageProductDependencies = (
 			);
 			productName = "Grid Image EditorUITests";
-			productReference = F49BCD072DB05CE500965F40 /* GriddyUITests.xctest */;
+			productReference = F4CDB9212DEFC5E100FD5184 /* GriddyUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -201,7 +203,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1630;
-				LastUpgradeCheck = 1630;
+				LastUpgradeCheck = 1640;
 				TargetAttributes = {
 					F49BCCEE2DB05CE400965F40 = {
 						CreatedOnToolsVersion = 16.3;
@@ -348,6 +350,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = J5S2US7X3W;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -412,6 +415,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
+				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = J5S2US7X3W;
 				ENABLE_NS_ASSERTIONS = NO;
@@ -445,6 +449,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = J5S2US7X3W;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -478,6 +483,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = J5S2US7X3W;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
@@ -506,6 +512,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = J5S2US7X3W;
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 15.3;
@@ -524,6 +531,7 @@
 				BUNDLE_LOADER = "$(TEST_HOST)";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = J5S2US7X3W;
 				GENERATE_INFOPLIST_FILE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 15.3;
@@ -541,6 +549,7 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = J5S2US7X3W;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
@@ -557,6 +566,7 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
+				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = J5S2US7X3W;
 				GENERATE_INFOPLIST_FILE = YES;
 				MARKETING_VERSION = 1.0;
