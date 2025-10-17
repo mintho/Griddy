@@ -29,6 +29,7 @@ struct Grid_Image_EditorApp: App {
                 exportCSVAction: { appDelegate.appState.showExportCSVPanel = true },
                 importCAction: { appDelegate.appState.showImportCPanel = true },
                 exportCHAction: { appDelegate.appState.showExportCHPanel = true },
+                exportTMXAction: { appDelegate.appState.showExportTMXPanel = true },
                 closeTabAction: { appDelegate.appState.closeTabTrigger = UUID() }
             )
         }

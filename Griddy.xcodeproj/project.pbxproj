@@ -22,6 +22,8 @@
 		F4472EF92DB9CB290056F8AB /* todo.txt in Resources */ = {isa = PBXBuildFile; fileRef = F4472EEB2DB9CB290056F8AB /* todo.txt */; };
 		F4472EFC2DB9CB290056F8AB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F4472EDE2DB9CB290056F8AB /* Assets.xcassets */; };
 		F4472F0E2DC02BE10056F8AB /* CustomScrollIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4472F0C2DC02BD30056F8AB /* CustomScrollIndicator.swift */; };
+		F450AA152EA1A8C200ED5065 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = F450AA142EA1A8BC00ED5065 /* .gitignore */; };
+		F450AA172EA1AA2B00ED5065 /* TiledExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F450AA162EA1AA2300ED5065 /* TiledExporter.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,6 +60,9 @@
 		F4472EEA2DB9CB290056F8AB /* TabBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabBarView.swift; sourceTree = "<group>"; };
 		F4472EEB2DB9CB290056F8AB /* todo.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = todo.txt; sourceTree = "<group>"; };
 		F4472F0C2DC02BD30056F8AB /* CustomScrollIndicator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomScrollIndicator.swift; sourceTree = "<group>"; };
+		F450AA122EA1A83400ED5065 /* show_swift.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = show_swift.sh; sourceTree = "<group>"; };
+		F450AA142EA1A8BC00ED5065 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		F450AA162EA1AA2300ED5065 /* TiledExporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TiledExporter.swift; sourceTree = "<group>"; };
 		F49BCCEF2DB05CE400965F40 /* Griddy.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Griddy.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		F4CDB9202DEFC5E100FD5184 /* GriddyTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GriddyTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		F4CDB9212DEFC5E100FD5184 /* GriddyUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = GriddyUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -101,6 +106,7 @@
 			children = (
 				F49BCCF02DB05CE400965F40 /* Products */,
 				F4472F112DC1AADC0056F8AB /* img */,
+				F450AA142EA1A8BC00ED5065 /* .gitignore */,
 				F4472EDC2DB9CB290056F8AB /* AppDelegate.swift */,
 				F4472EDD2DB9CB290056F8AB /* AppState.swift */,
 				F4472EDE2DB9CB290056F8AB /* Assets.xcassets */,
@@ -115,7 +121,9 @@
 				F4472EE72DB9CB290056F8AB /* MenuCommands.swift */,
 				F4472EE82DB9CB290056F8AB /* ProjectData.swift */,
 				F4472EE92DB9CB290056F8AB /* README.md */,
+				F450AA122EA1A83400ED5065 /* show_swift.sh */,
 				F4472EEA2DB9CB290056F8AB /* TabBarView.swift */,
+				F450AA162EA1AA2300ED5065 /* TiledExporter.swift */,
 				F4472EEB2DB9CB290056F8AB /* todo.txt */,
 			);
 			sourceTree = "<group>";
@@ -245,6 +253,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				F4472EF72DB9CB290056F8AB /* LICENSE in Resources */,
+				F450AA152EA1A8C200ED5065 /* .gitignore in Resources */,
 				F4472EF82DB9CB290056F8AB /* README.md in Resources */,
 				F4472EF92DB9CB290056F8AB /* todo.txt in Resources */,
 				F4472EFC2DB9CB290056F8AB /* Assets.xcassets in Resources */,
@@ -278,6 +287,7 @@
 				F4472EEE2DB9CB290056F8AB /* TabBarView.swift in Sources */,
 				F4472EEF2DB9CB290056F8AB /* AppDelegate.swift in Sources */,
 				F4472EF02DB9CB290056F8AB /* AppState.swift in Sources */,
+				F450AA172EA1AA2B00ED5065 /* TiledExporter.swift in Sources */,
 				F4472EF12DB9CB290056F8AB /* ContentView.swift in Sources */,
 				F4472EF22DB9CB290056F8AB /* FileState.swift in Sources */,
 				F4472EF32DB9CB290056F8AB /* FileView.swift in Sources */,
@@ -463,7 +473,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.minzenmay.Griddy;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
@@ -497,7 +507,7 @@
 					"@executable_path/../Frameworks",
 				);
 				MACOSX_DEPLOYMENT_TARGET = 15.0;
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.minzenmay.Griddy;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				REGISTER_APP_GROUPS = YES;
