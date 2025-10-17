@@ -74,6 +74,7 @@ class AppState: ObservableObject {
     @Published var showExportCHPanel = false
     @Published var showImportCPanel = false
     @Published var openFiles: [FileState] = []
+    @Published var showExportTMXPanel: Bool = false
     
     @Published var saveProjectTrigger: UUID? = nil
     @Published var saveProjectAsTrigger: UUID? = nil

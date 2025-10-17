@@ -14,90 +14,138 @@
 [![macOS](https://img.shields.io/badge/macOS-15.0%2B-blue)](https://www.apple.com/macos)
 [![Swift](https://img.shields.io/badge/Swift-5.9%2B-orange.svg)](https://swift.org)
 [![SwiftUI](https://img.shields.io/badge/SwiftUI-Latest-brightgreen.svg)](https://developer.apple.com/xcode/swiftui/)
-[![License](https://img.shields.io/badge/License-MIT-lightgrey.svg)](LICENSE) 
+[![License](https://img.shields.io/badge/License-MIT-lightgrey.svg)](LICENSE)
 
-![Griddy App Screenshot](img/Griddy.png) 
+![Griddy App Screenshot](img/Griddy.png)
 
-Griddy is a straightforward macOS application designed specifically for **Sega Mega Drive / Genesis developers** (and potentially other retro platforms) who need to visually create data maps based on image layouts. It excels at generating **collision maps** or defining areas with specific **tile properties**.
+Griddy is a straightforward macOS application designed for **Sega Mega Drive / Genesis developers** (and other retro platforms) who need to visually create data maps based on image layouts. It overlays an **8×8** grid on top of a PNG and lets you “paint” tile properties (0–9) into each cell. You can then export the result to formats ready for your game tools and engines.
 
-It works by overlaying an 8x8 pixel grid onto a PNG image (like a level map background) and allowing you to "paint" values (0-9) onto each grid cell. The resulting numerical grid data can be easily exported to various formats suitable for direct integration into your Mega Drive C or assembly code arrays.
+---
 
 ## Features
 
-*   **Open PNG Files:** Opens standard PNG images. **(Crucial: Image dimensions must be exact multiples of 8 pixels)**.
-*   **8x8 Grid Overlay:** Automatically places a visual 8x8 grid, matching the tile size commonly used on the Mega Drive.
-*   **Tile Value Painting:**
-    *   Select from 9 distinct values/colors (numbered 1-9) plus a "No Value" option (0).
-    *   Click a grid cell to assign the selected value.
-    *   Click and drag to assign the selected value to rectangular areas.
-    *   Use the "No Value" tool (index 0) to clear values from cells (sets them to 0).
-    *   Painted cells are semi-transparent, allowing the underlying map image to remain visible.
-*   **Multiple Document Tabs:** Open and work on multiple map images simultaneously.
-*   **Zoom & Pan:** Easily navigate large maps using pinch-to-zoom or toolbar buttons, and pan with trackpad/mouse scrolling.
-*   **Drag & Drop:** Quickly open `.png` or `.griddy` project files by dragging them onto the app window or Dock icon.
-*   **Project Saving (.griddy):** Save your work (base image + assigned grid values) into a custom `.griddy` project file.
-*   **Data Export Formats:**
-    *   **C Header/Source Export:** Directly export the grid data as `const u16 arrayName[ROWS][COLS]` into `.c` and `.h` files, ready for SGDK (or similar C-based dev kits). Includes basic header guards. You choose the base name for the files and the array variable. 
-    *   **CSV Export/Import:** Export the numerical grid data (0-9) as a **comma-separated** CSV file. Import grid data from a **comma- or semicolon-separated** CSV file (dimensions must match the current image's grid). 
-*   **Interface:**
-    *   Clean, native macOS look using SwiftUI.
+- **Open PNG Files:** Works with standard PNG images.  
+  **Important:** Image dimensions must be **multiples of 8** pixels.
+
+- **8×8 Grid Overlay:** Matches common tile size on the Mega Drive.
+
+- **Tile Value Painting:**
+  - 10 tools: **0** (“No Value” / erase) and **1–9** color indices.
+  - Click to paint a cell; click-drag to paint rectangles.
+  - Cells render semi-transparent so your map stays visible.
+
+- **Multiple Documents (Tabs):** Work on many maps at once.
+
+- **Zoom & Pan:** Pinch-to-zoom and smooth panning; custom scrollbars.
+
+- **Drag & Drop:** Drop `.png` or `.griddy` files on the window or Dock icon.
+
+- **Project Saving (`.griddy`):** Save image + grid data together.  
+  Griddy preserves **original PNG bytes** (when available) so palette/index info can be reused for exports.
+
+- **Data Import/Export:**
+  - **C/H Export:** Generate `const u16 NAME[ROWS][COLS]` data for SGDK (or similar) with a matching header guard.
+  - **CSV Export/Import:** Export 0–9 grid as CSV; import CSV with comma **or** semicolon separators.
+  - **Tiled Export (TMX/TSX/PNG):**
+    - Creates a **TMX map** (CSV layer), an external **TSX tileset**, and a **PNG8 tileset atlas**.
+    - The tileset atlas is built by **deduplicating** unique 8×8 tiles from the source image and packing them in a grid.
+    - **Palette/indexed PNGs remain untouched:** the exported tileset PNG preserves **exact palette indices** from the source (no quantization).
+    - **Transparent color** in TSX is set from a chosen palette index (default: index 0).
+    - Output references the external TSX and tileset PNG so you can open the TMX directly in **Tiled**.
+
+---
 
 ## Installation
 
-**1. Pre-built Application (Recommended):**
+**1) Pre-built Application (Recommended)**
 
-*   Go to the **[Releases](https://github.com/mintho/Griddy/releases)** page of this repository. 
-*   Download the latest `Griddy_vX.Y.Z.zip`.
-*   Unzip and drag `Griddy.app` to your `/Applications` folder.
-*   **First Launch:** Right-click `Griddy.app` -> "Open" -> Confirm "Open" in the dialog. (This may be required due to macOS Gatekeeper).
+- See **[Releases](https://github.com/mintho/Griddy/releases)**.
+- Download the latest `Griddy_vX.Y.Z.zip`.
+- Unzip and drag `Griddy.app` to `/Applications`.
+- First launch: Right-click → **Open** → **Open** (macOS Gatekeeper).
 
-**2. Building from Source:**
+**2) Build from Source**
 
-*   **Prerequisites:** macOS 14.0+, Xcode 15.0+, Git.
-*   **Steps:**
-    1.  `git clone https://github.com/mintho/Griddy.git`
-    2.  `cd Griddy`
-    3.  Open `Griddy.xcodeproj` in Xcode.
-    4.  Select the `Griddy` scheme and "My Mac".
-    5.  Build & Run (Cmd+R).
+- Requires macOS 14.0+, Xcode 15.0+, Git.
+- `git clone https://github.com/mintho/Griddy.git`
+- `cd Griddy`
+- Open `Griddy.xcodeproj`, select the **Griddy** scheme, and run (⌘R).
+
+---
 
 ## How to Use
 
-1.  **Launch Griddy.**
-2.  **Open Map Image:** Use `File > Open PNG...` (Cmd+O) or drag a PNG onto the app. Remember: **Dimensions must be multiples of 8!**
-3.  **Painting Values:**
-    *   Use the **Toolbar** on the right.
-    *   Click a **Color Circle (1-9)** to select a value to paint.
-    *   Click the **White Circle with Red Slash (0)** to select the "No Value" / erase tool.
-    *   **Click** on a grid cell in the image area to assign the selected value.
-    *   **Click and Drag** to assign the value to a rectangular area.
-    *   Use `Edit > Undo` (Cmd+Z) and `Edit > Redo` (Cmd+Shift+Z) as needed.
-4.  **Navigation:** Use the **Zoom Buttons** (+/-) in the toolbar or **Pinch-to-Zoom** on the image. **Pan** using two-finger scroll (trackpad) or mouse scroll/drag.
-5.  **Saving/Loading Project:**
-    *   Use `File > Save Project` (Cmd+S) or `Save Project As...` (Cmd+Shift+S) to save the image and grid data together in a `.griddy` file.
-    *   Use `File > Open Project...` (Cmd+Shift+O) or drag-and-drop to load a `.griddy` file.
-6.  **Exporting for Mega Drive / Genesis:**
-    *   **Option A (Recommended for C): Export C/H Source** (`File > Export C/H Source...`, Cmd+E)
-        *   Choose a directory and provide a base name (e.g., `level1_map`).
-        *   This generates `level1_map.c` and `level1_map.h`.
-        *   The `.c` file contains `const u16 LEVEL1_MAP[HEIGHT][WIDTH] = { {0,0,1,...}, ... };`
-        *   The `.h` file contains the `extern const u16 ...` declaration and includes `<genesis.h>`.
-        *   The array name is automatically uppercased from your base name.
-    *   **Option B: Export CSV** (`File > Export CSV...`, Cmd+Shift+E)
-        *   Saves a standard CSV file (values separated by commas).
-        *   You can parse this manually or use scripts to convert it into the array format needed by your specific toolchain (e.g., for assembly).
-7.  **Importing Data:**
-    *   **Import C Source:** (`File > Import C Source...`, Cmd+I) - Select a `.c` file previously exported by Griddy (or one following the exact `const u16 name[rows][cols] = { ... };` format). Grid data will be loaded. *Dimensions must match the current image.*
-    *   **Import CSV:** (`File > Import CSV...`, Cmd+Shift+I) - Select a `.csv` file (comma or semicolon separated). Grid data will be loaded. *Dimensions must match the current image.*
-8.  **Tabs:** Open multiple files via the menu or drag-and-drop. Use the tab bar at the top to switch files. Click the 'x' on a tab or use Cmd+W / `File > Close Tab` to close the current tab. You will be prompted to save if there are unsaved changes.
+1. **Open a Map PNG:** `File > Open PNG…` (⌘O) or drag a PNG onto the window.  
+   **Must be an indexed PNG** for TMX export (see notes below), and both width & height must be multiples of **8**.
+
+2. **Paint Values:**
+   - Pick **0–9** in the right toolbar.
+   - Click to paint; click-drag for rectangles.
+   - Undo/Redo as usual (⌘Z / ⇧⌘Z).
+
+3. **Save Projects (`.griddy`):**
+   - `File > Save Project` (⌘S) or `Save Project As…` (⇧⌘S).
+   - Keeps your grid data and (when possible) **original PNG bytes** intact.
+
+4. **Export Options:**
+   - **C/H Source…** `File > Export C/H Source…` (⌘E)  
+     Produces `name.c` + `name.h` with `const u16 NAME[H][W]`.
+   - **CSV…** `File > Export CSV…` (⇧⌘E)  
+     A standard CSV (0–9 values) for custom tooling.
+   - **NEW: TMX/TSX/PNG…** `File > Export TMX/TSX/PNG…` (⇧⌘T)  
+     - Choose an output directory and **base name**.
+     - Griddy writes:
+       - `base.tmx` – Tiled map (CSV layer, 1-based GIDs).
+       - `base_tileset.tsx` – External tileset (references the PNG).
+       - `base_tiles.png` – **PNG8** tileset atlas (deduplicated 8×8 tiles).
+     - Open the `.tmx` directly in **Tiled**.
+
+---
+
+## Notes on TMX/TSX/PNG Export
+
+- **Source Image Requirements (for exact palette preservation):**
+  - Must be **indexed (paletted)** PNG (color type 3).
+  - Bit depth **1 / 2 / 4 / 8** supported.
+  - **No interlacing** (Adam7 not supported).
+  - Griddy reads the original PNG bytes (from the file or from `.griddy`) to rebuild the tileset atlas with the **same palette & indices**.
+
+- **Tile Size:** Fixed at **8×8** (matches Griddy’s grid).
+
+- **Deduplication:** Identical 8×8 tiles are merged; the TMX layer uses 1-based GIDs pointing into the atlas.
+
+- **Transparent Color:** The tileset’s transparent color is derived from a palette index (defaults to **0**).  
+  You can tweak this in code if your pipeline needs a different index.
+
+- **Tiled Compatibility:**  
+  The TMX uses `<data encoding="csv">` with **width × height** values, separated by commas and line breaks.  
+  The TSX references the PNG tileset via a relative filename. Open the TMX in Tiled and it should resolve automatically if all files are kept together.
+
+---
 
 ## File Formats
 
-*   **`.griddy`:** Native JSON project file containing the original PNG image data and the current grid data array.
-*   **`.c` / `.h`:** Standard C source and header files containing the grid data as a `const u16` 2D array, suitable for SGDK.
-*   **`.csv`:** Comma-separated values (0-9) representing the grid, row by row.
+- **`.griddy`** – JSON project file: original PNG bytes (when available) + current grid array.
+- **`.c` / `.h`** – C source/header with `const u16 NAME[ROWS][COLS]`.
+- **`.csv`** – Comma-separated grid values (0–9) row by row.
+- **`.tmx` / `.tsx` / `.png`** – Tiled map + external tileset + PNG8 tileset atlas.
+
+---
+
+## Troubleshooting
+
+- **“Invalid Dimensions” when opening PNG**  
+  Make sure the image size is an exact multiple of **8×8**.
+
+- **TMX won’t open in Tiled / “Corrupt layer data”**  
+  Ensure all three exported files (`.tmx`, `.tsx`, `.png`) are together and that the TMX references the TSX and PNG by **matching filenames**.  
+  If you hand-edit the TSX/TMX, keep `width/height/tilewidth/tileheight` in sync with your source image and Griddy’s grid.
+
+- **Palette looks wrong in tileset PNG**  
+  Verify your source PNG is **indexed** (paletted) and not true-color; Griddy preserves the original palette & per-pixel indices.
+
+---
 
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-

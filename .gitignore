@@ -1,0 +1,5 @@
+show_swift.sh
+swift_output.txt
+
+# Ignore all .DS_Store files (common on macOS)
+.DS_Store

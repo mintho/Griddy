@@ -16,6 +16,7 @@ struct MenuCommands: Commands {
     let exportCSVAction: () -> Void
     let importCAction: () -> Void
     let exportCHAction: () -> Void
+    let exportTMXAction: () -> Void
     let closeTabAction: () -> Void
     
     @Environment(\.undoManager) var undoManager
@@ -51,6 +52,11 @@ struct MenuCommands: Commands {
             
             Button("Export CSV...") { exportCSVAction() }
                 .keyboardShortcut("e", modifiers: [.command, .shift])
+            
+            Divider()
+
+            Button("Export TMX/TSX/PNG…") { exportTMXAction() }
+                .keyboardShortcut("t", modifiers: [.command, .shift])
             
             Divider()
             
