@@ -22,7 +22,6 @@
 		F4472EF92DB9CB290056F8AB /* todo.txt in Resources */ = {isa = PBXBuildFile; fileRef = F4472EEB2DB9CB290056F8AB /* todo.txt */; };
 		F4472EFC2DB9CB290056F8AB /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F4472EDE2DB9CB290056F8AB /* Assets.xcassets */; };
 		F4472F0E2DC02BE10056F8AB /* CustomScrollIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4472F0C2DC02BD30056F8AB /* CustomScrollIndicator.swift */; };
-		F450AA152EA1A8C200ED5065 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = F450AA142EA1A8BC00ED5065 /* .gitignore */; };
 		F450AA172EA1AA2B00ED5065 /* TiledExporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F450AA162EA1AA2300ED5065 /* TiledExporter.swift */; };
 /* End PBXBuildFile section */
 
@@ -253,7 +252,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				F4472EF72DB9CB290056F8AB /* LICENSE in Resources */,
-				F450AA152EA1A8C200ED5065 /* .gitignore in Resources */,
 				F4472EF82DB9CB290056F8AB /* README.md in Resources */,
 				F4472EF92DB9CB290056F8AB /* todo.txt in Resources */,
 				F4472EFC2DB9CB290056F8AB /* Assets.xcassets in Resources */,
