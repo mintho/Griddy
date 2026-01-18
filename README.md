@@ -45,7 +45,7 @@ Griddy is a straightforward macOS application designed for **Sega Mega Drive / G
 
 - **Data Import/Export:**
   - **C/H Export:** Generate `const u16 NAME[ROWS][COLS]` data for SGDK (or similar) with a matching header guard.
-  - **CSV Export/Import:** Export 0–9 grid as CSV; import CSV with comma **or** semicolon separators.
+  - **CSV Export/Import:** Export 0–9 grid as CSV; import CSV with comma separators.
   - **Tiled Export (TMX/TSX/PNG):**
     - Creates a **TMX map** (CSV layer), an external **TSX tileset**, and a **PNG8 tileset atlas**.
     - The tileset atlas is built by **deduplicating** unique 8×8 tiles from the source image and packing them in a grid.
